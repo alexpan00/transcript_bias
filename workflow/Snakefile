@@ -9,7 +9,7 @@ from scripts.utils import (
     sqanti_time, sqanti_queue, format_sjtab, check_tools, 
     group_by_sample, NOISeq_memory, flair_memory, index_memory,
     flair_time, flair_queue, extra_memory, flair_transcriptome_memory, bambu_memory,
-    get_rule_resource
+    get_rule_resource, validate_samples_and_factors
 )
 
 ################################################################################
@@ -49,6 +49,9 @@ tama_dir = config.get("tama_dir", "tama")
 config["sqanti_dir"] = sqanti_dir = config.get("sqanti_dir", "SQANTI3")
 
 # Load and process metadata
+if config.get("factors"):
+    validate_samples_and_factors(config["metadata"], config["factors"])
+
 metadata = pd.read_csv(config["metadata"])
 grouped = group_by_condition(metadata)
 conditions = list(grouped.keys())

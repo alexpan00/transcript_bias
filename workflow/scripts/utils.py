@@ -88,6 +88,47 @@ def check_tools(user_tools, tools):
         if tool not in tools:
             raise ValueError(f"Tool '{tool}' not implemented. Available tools are: {', '.join(tools)}")
 
+def validate_samples_and_factors(metadata_path, factors_path):
+    """
+    Validates that metadata and factors files exist, contain required columns,
+    and have matching sample sets with no orphan samples.
+    """
+    import pandas as pd
+    if not os.path.exists(metadata_path):
+        raise FileNotFoundError(f"Metadata file not found at: {metadata_path}")
+    if not os.path.exists(factors_path):
+        raise FileNotFoundError(f"Factors file not found at: {factors_path}")
+
+    metadata_df = pd.read_csv(metadata_path)
+    factors_df = pd.read_csv(factors_path)
+
+    if "sample" not in metadata_df.columns:
+        raise ValueError(f"Required 'sample' column missing from metadata file: {metadata_path}")
+    
+    factor_sample_col = "sample" if "sample" in factors_df.columns else ("Sample" if "Sample" in factors_df.columns else factors_df.columns[0])
+
+    meta_samples = set(metadata_df["sample"].dropna())
+    factor_samples = set(factors_df[factor_sample_col].dropna())
+
+    meta_dups = metadata_df["sample"][metadata_df["sample"].duplicated()].tolist()
+    if meta_dups:
+        raise ValueError(f"Duplicate sample IDs found in metadata file ({metadata_path}): {meta_dups}")
+
+    factor_dups = factors_df[factor_sample_col][factors_df[factor_sample_col].duplicated()].tolist()
+    if factor_dups:
+        raise ValueError(f"Duplicate sample IDs found in factors file ({factors_path}): {factor_dups}")
+
+    in_meta_not_factor = meta_samples - factor_samples
+    in_factor_not_meta = factor_samples - meta_samples
+
+    if in_meta_not_factor or in_factor_not_meta:
+        msg = "Sample mismatch between metadata and factors files:\n"
+        if in_meta_not_factor:
+            msg += f"  - Samples in metadata but missing from factors ({factors_path}): {sorted(list(in_meta_not_factor))}\n"
+        if in_factor_not_meta:
+            msg += f"  - Samples in factors but missing from metadata ({metadata_path}): {sorted(list(in_factor_not_meta))}\n"
+        raise ValueError(msg)
+
 def get_rule_resource(config, rule_name, resource_key, default_val_or_func):
     """
     Returns a resource-resolver function usable directly inside Snakemake rule directives.
