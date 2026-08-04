@@ -23,7 +23,7 @@ rule count_SIRV_reads:
 rule SIRV_expected_quant:
     input:
         counts=rules.count_SIRV_reads.output.counts,
-        script=SCRIPTS + "/SIRV_expected_quant.py",
+        script=SCRIPTS + "/quantification/SIRV_expected_quant.py",
         mix_matrix=config.get("sirv_mixes", "config/sirv_mixes.json")
     output:
         expected=os.path.join(config["output_dir"], "SIRVs", "{sample}", "SIRV_expected.tsv")
@@ -88,7 +88,7 @@ rule merge_SIRV_counts:
 rule SIRV_counts_NOISeq:
     input:
         counts=rules.merge_SIRV_counts.output.counts,
-        script=SCRIPTS + "/SIRV_NOIseq.R",
+        script=SCRIPTS + "/normalization/SIRV_NOIseq.R",
         factors=config["factors"],
         sirvs_info=config.get("sirvs_info", "sirvs_info.csv")
     output:
@@ -114,7 +114,7 @@ rule SIRV_counts_NOISeq:
 rule ERCC_counts_NOISeq:
     input:
         counts=config.get("ERCC_counts", ""),
-        script=SCRIPTS + "/ERCC_NOIseq.R",
+        script=SCRIPTS + "/normalization/ERCC_NOIseq.R",
         factors=config["factors"]
     output:
         noiseqcounts=os.path.join(config["output_dir"], "SIRVs", "NOIseq", "{experiment}_ERCC_counts.rds")

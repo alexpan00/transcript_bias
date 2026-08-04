@@ -3,8 +3,8 @@ rule long_read_gene_level_expression_ratio_counts:
     input:
         noiseq_objs=os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{experiment}_NOIseq.rds"),
         tx2gene_file=os.path.join(config["output_dir"],"{tool}", "NOIseq", "{experiment}_transcript_to_gene.tsv"),
-        script=SCRIPTS + "/get_gene_level_expression.R",
-        script_normalization=SCRIPTS + "/normalization.R",
+        script=SCRIPTS + "/normalization/get_gene_level_expression.R",
+        script_normalization=SCRIPTS + "/normalization/normalization.R",
     output:
         gene_level_norm_counts = os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{experiment}_gene_level_expression.rds"),
         gene_level_norm_counts_ratio = os.path.join(config["output_dir"], "{tool}", "NOIseq", "ratio_counts", "{experiment}_gene_level_NOIseq.rds"),
@@ -33,7 +33,7 @@ rule long_read_gene_level_expression_ratio_counts:
 rule ratio_counts_normalization_sr:
     input:
         noiseq_obj=rules.NOIseq_object_sr.output.noiseq_obj,
-        script=SCRIPTS + "/normalization.R",
+        script=SCRIPTS + "/normalization/normalization.R",
     output:
         norm_counts = os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "ratio_counts", "{experiment}_NOIseq.rds"),
     conda:
@@ -63,8 +63,8 @@ rule shortread_gene_level_expression_ratio_counts:
     input:
         noiseq_objs=os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "{experiment}_NOIseq.rds"),
         tx2gene_file=os.path.join(config["output_dir"],"kallisto_sr", "NOIseq", "{experiment}_transcript_to_gene.tsv"),
-        script=SCRIPTS + "/get_gene_level_expression.R",
-        script_normalization=SCRIPTS + "/normalization.R",
+        script=SCRIPTS + "/normalization/get_gene_level_expression.R",
+        script_normalization=SCRIPTS + "/normalization/normalization.R",
     output:
         gene_level_norm_counts = os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "{experiment}_gene_level_expression.rds"),
         gene_level_norm_counts_ratio = os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "ratio_counts", "{experiment}_gene_level_NOIseq.rds"),
@@ -94,7 +94,7 @@ rule shortread_gene_level_expression_ratio_counts:
 rule SIRV_expression_ratio_counts:
     input:
         sirv_obj=os.path.join(config["output_dir"], "SIRVs", "NOIseq", "{experiment}_SIRV_counts.rds"),
-        script_normalization=SCRIPTS + "/normalization.R",
+        script_normalization=SCRIPTS + "/normalization/normalization.R",
     output:
         sirv_norm_counts_ratio = os.path.join(config["output_dir"], "SIRVs", "NOIseq", "ratio_counts", "{experiment}_SIRV_NOIseq.rds"),
     conda:
@@ -121,7 +121,7 @@ rule SIRV_expression_ratio_counts:
 rule ERCC_expression_ratio_counts:
     input:
         ercc_obj=os.path.join(config["output_dir"], "SIRVs", "NOIseq", "{experiment}_ERCC_counts.rds"),
-        script_normalization=SCRIPTS + "/normalization.R",
+        script_normalization=SCRIPTS + "/normalization/normalization.R",
     output:
         ercc_norm_counts_ratio = os.path.join(config["output_dir"], "SIRVs", "NOIseq", "ratio_counts", "{experiment}_ERCC_NOIseq.rds"),
     conda:
@@ -148,7 +148,7 @@ rule ERCC_expression_ratio_counts:
 rule NOIseq_sr_ratio_counts_analysis:
     input:
         NOISeq_object=os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "ratio_counts","{experiment}_NOIseq.rds"),
-        script=SCRIPTS + "/NOIseq_analysis.R",
+        script=SCRIPTS + "/normalization/NOIseq_analysis.R",
     output:
         check=os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", ".sr_{experiment}_ratio_counts"),
         corplot=report(

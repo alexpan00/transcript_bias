@@ -72,7 +72,7 @@ def get_sirv_contrast_reports():
 rule NOIseq:
     input:
         NOISeq_object=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}","{experiment}_NOIseq.rds"),
-        script=SCRIPTS + "/NOIseq_analysis.R",
+        script=SCRIPTS + "/normalization/NOIseq_analysis.R",
     output:
         check=os.path.join(config["output_dir"], "{tool}", "NOIseq", ".{experiment}_{normalization_method}"),
         corplot=report(
@@ -145,7 +145,7 @@ rule NOIseq_object:
         counts=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{experiment}_counts.tsv"),
         factors=config["factors"],
         transcripts_stats=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{experiment}_transcript_models.tsv"),
-        script=SCRIPTS + "/NOIseq_object.R",
+        script=SCRIPTS + "/normalization/NOIseq_object.R",
         structural_category=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{experiment}_structural_category.tsv"),
         metadata_extended=os.path.join(config["output_dir"], "metadata_extended.tsv")
     output:
@@ -178,7 +178,7 @@ rule NOIseq_object_sr:
         counts=os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "{experiment}_counts.tsv"),
         factors=config["factors"],
         transcripts_stats=os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "{experiment}_transcript_models.tsv"),
-        script=SCRIPTS + "/NOIseq_object.R",
+        script=SCRIPTS + "/normalization/NOIseq_object.R",
         structural_category=os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "{experiment}_structural_category.tsv"),
         metadata_extended=os.path.join(config["output_dir"], "metadata_extended.tsv")
     output:
@@ -210,7 +210,7 @@ rule NOIseq_object_sr:
 rule NOIseq_sr:
     input:
         NOISeq_object=os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "TPM","{experiment}_NOIseq.rds"),
-        script=SCRIPTS + "/NOIseq_analysis.R",
+        script=SCRIPTS + "/normalization/NOIseq_analysis.R",
     output:
         check=os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", ".sr_{experiment}"),
         corplot=report(
@@ -267,7 +267,7 @@ rule long_vs_short:
     input:
         long=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}","{experiment}_NOIseq.rds"),
         short=get_short_read_input,
-        script=SCRIPTS + "/long_vs_short.R"
+        script=SCRIPTS + "/analysis/long_vs_short.R"
     output:
         check=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", ".{experiment}_long_vs_short"),
         summary_sr=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", "{experiment}_sr_summary.rds"),
@@ -321,7 +321,7 @@ rule long_vs_short_tusco:
     input:
         long=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}","{experiment}_NOIseq.rds"),
         short=get_short_read_input,
-        script=SCRIPTS + "/compute_subset_correlation.R",
+        script=SCRIPTS + "/analysis/compute_subset_correlation.R",
         tusco_list=config.get("tusco_list", ""),
     output:
         summary_tusco=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", "{experiment}_tusco_summary.rds"),
@@ -377,7 +377,7 @@ rule long_vs_short_gene_level:
     input:
         long=get_long_read_gene_level_input,
         short=get_short_read_gene_level_input,
-        script=SCRIPTS + "/long_vs_short.R"
+        script=SCRIPTS + "/analysis/long_vs_short.R"
     output:
         check=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", ".{experiment}_gene_level_long_vs_short"),
         summary_sr=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", "{experiment}_gene_level_sr_summary.rds"),
@@ -442,7 +442,7 @@ rule SIRV_validation:
     input:
         long=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}","{experiment}_NOIseq.rds"),
         sirv=lambda wildcards: get_sirv_input,
-        script=SCRIPTS + "/SIRV_analysis.R",
+        script=SCRIPTS + "/analysis/SIRV_analysis.R",
         sirvs_info=config.get("sirvs_info", "sirvs_info.csv"),
     output:
         check=os.path.join(config["output_dir"], "{tool}", "NOIseq", ".{experiment}_{normalization_method}_SIRV"),
@@ -556,7 +556,7 @@ rule ERCC_validation:
     input:
         long=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}","{experiment}_NOIseq.rds"),
         ercc=lambda wildcards: get_ercc_input,
-        script=SCRIPTS + "/ERCC_analysis.R",
+        script=SCRIPTS + "/analysis/ERCC_analysis.R",
     output:
         summary_ercc=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", "{experiment}_ercc_summary.rds"),
         cor_common=report(
@@ -608,7 +608,7 @@ rule ERCC_validation:
 rule SQANTI_analysis:
     input:
         long=os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw","{experiment}_NOIseq.rds"),
-        script=SCRIPTS + "/SQANTI_analysis.R",
+        script=SCRIPTS + "/analysis/SQANTI_analysis.R",
     output:
         summary=os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{experiment}_SQ_counts_per_sample.csv"),
         summary_global=os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{experiment}_SQ_counts_global.csv"),
@@ -658,7 +658,7 @@ rule SQANTI_analysis:
 rule SIRV_contrasts:
     input:
         long=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}","{experiment}_NOIseq.rds"),
-        script=SCRIPTS + "/SIRV_contrasts.R",
+        script=SCRIPTS + "/analysis/SIRV_contrasts.R",
         sirvs_info=config.get("sirvs_info", "sirvs_info.csv"),
     output:
         check=os.path.join(config["output_dir"], "{tool}", "NOIseq", ".{experiment}_{normalization_method}_SIRV_contrasts"),
@@ -686,7 +686,7 @@ rule sirv_sensitivity:
     input:
         long=os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{experiment}_NOIseq.rds"),
         sirv_object=os.path.join(config["output_dir"], "SIRVs", "NOIseq", "{experiment}_SIRV_counts.rds"),
-        script=SCRIPTS + "/sirv_sensitivity.R",
+        script=SCRIPTS + "/analysis/sirv_sensitivity.R",
     output:
         tool_sirv_sensitivity=os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{experiment}_sirv_sensitivity.csv"),
     conda:
@@ -710,7 +710,7 @@ rule ercc_sensitivity:
     input:
         long=os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{experiment}_NOIseq.rds"),
         ercc_object=os.path.join(config["output_dir"], "SIRVs", "NOIseq", "{experiment}_ERCC_counts.rds"),
-        script=SCRIPTS + "/sirv_sensitivity.R",
+        script=SCRIPTS + "/analysis/sirv_sensitivity.R",
     output:
         tool_ercc_sensitivity=os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{experiment}_ercc_sensitivity.csv"),
     conda:
@@ -734,7 +734,7 @@ rule isoforms_per_gene:
     input:
         long=rules.NOIseq_object.output.noiseq_obj,
         classification=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{experiment}_classification.txt"),
-        script=SCRIPTS + "/expression_vs_n_isoforms.R",
+        script=SCRIPTS + "/analysis/expression_vs_n_isoforms.R",
     output:
         check=os.path.join(config["output_dir"], "{tool}", "NOIseq", ".{experiment}_iso_per_gene"),
         gene_expression_vs_isoforms=report(
@@ -786,7 +786,7 @@ rule isoforms_per_gene:
 rule replicability:
     input:
         long=rules.NOIseq_object.output.noiseq_obj,
-        script=SCRIPTS + "/replicability.R",
+        script=SCRIPTS + "/analysis/replicability.R",
     output:
         check=os.path.join(config["output_dir"], "{tool}", "NOIseq", ".{experiment}_replicability"),
         replicability_expression=report(
@@ -838,7 +838,7 @@ rule replicability:
 rule coverage:
     input:
         bam=rules.align_transcriptome.output.bam,
-        script=SCRIPTS + "/coverage.R",
+        script=SCRIPTS + "/plotting/coverage.R",
         gclen=rules.transcriptome_stats.output.output,
     output:
         coverage_plot=report(
@@ -869,7 +869,7 @@ rule coverage:
 rule normalization:
     input:
         noiseq_obj=rules.NOIseq_object.output.noiseq_obj,
-        script=SCRIPTS + "/normalization.R",
+        script=SCRIPTS + "/normalization/normalization.R",
         length_normalization_params=lambda wildcards: [config["length_normalization_params"]] if wildcards.norm_method == "read_density" else [],
     output:
         norm_counts = os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{experiment}_NOIseq.rds"),
@@ -898,8 +898,8 @@ rule short_read_gene_level_tpm:
     input:
         noiseq_obj=rules.NOIseq_object_sr.output.noiseq_obj,
         tx2gene_file=os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "{experiment}_transcript_to_gene.tsv"),
-        script_norm=SCRIPTS + "/normalization.R",
-        script_gene_level_expr=SCRIPTS + "/get_gene_level_expression.R",
+        script_norm=SCRIPTS + "/normalization/normalization.R",
+        script_gene_level_expr=SCRIPTS + "/normalization/get_gene_level_expression.R",
     output:
         norm_counts = os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "TPM", "{experiment}_NOIseq.rds"),
         gene_level_norm_counts = os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "TPM", "{experiment}_gene_level_expression.rds"),
@@ -931,7 +931,7 @@ rule long_read_gene_level_expression:
     input:
         noiseq_objs=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{experiment}_NOIseq.rds"),
         tx2gene_file=os.path.join(config["output_dir"],"{tool}", "NOIseq", "{experiment}_transcript_to_gene.tsv"),
-        script=SCRIPTS + "/get_gene_level_expression.R",
+        script=SCRIPTS + "/normalization/get_gene_level_expression.R",
     output:
         gene_level_norm_counts = os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{experiment}_gene_level_expression.rds"),
     conda:
@@ -954,7 +954,7 @@ rule long_read_gene_level_expression:
 rule summary_normalization_length:
     input:
         noiseq_objs=expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{{experiment}}_NOIseq.rds"), norm_method = normalization_methods, tool=user_tools),
-        script=SCRIPTS + "/summary_length.R",
+        script=SCRIPTS + "/summary/summary_length.R",
     output:
         summary_df = os.path.join(config["output_dir"], "{experiment}_normalization_length_summary.csv"),
         summary_length_plot = report(
@@ -997,7 +997,7 @@ rule generate_synthetic_mixtures:
     input:
         raw=os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{experiment}_NOIseq.rds"),
         mix_def=config.get("mixture_definition", "mixture_definition.csv"),
-        script=SCRIPTS + "/generate_synthetic_mixtures.R"
+        script=SCRIPTS + "/analysis/generate_synthetic_mixtures.R"
     output:
         syn_raw=os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{experiment}_synthetic_NOIseq.rds")
     conda:
@@ -1018,7 +1018,7 @@ rule generate_synthetic_mixtures:
 rule normalize_synthetic_mixtures:
     input:
         syn_raw=rules.generate_synthetic_mixtures.output.syn_raw,
-        script=SCRIPTS + "/normalization.R",
+        script=SCRIPTS + "/normalization/normalization.R",
         length_normalization_params=lambda wildcards: [config["length_normalization_params"]] if wildcards.normalization_method == "read_density" else [],
     output:
         syn_norm=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", "{experiment}_synthetic_NOIseq.rds")
@@ -1046,7 +1046,7 @@ rule mixture_correlation:
         obs_norm=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}","{experiment}_NOIseq.rds"),
         syn_norm=rules.normalize_synthetic_mixtures.output.syn_norm,
         mix_def=config.get("mixture_definition", "mixture_definition.csv"),
-        script=SCRIPTS + "/mixture_correlation.R"
+        script=SCRIPTS + "/analysis/mixture_correlation.R"
     output:
         check=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", ".{experiment}_mixture_correlation"),
         summary=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", "{experiment}_mixture_summary.rds"),
@@ -1082,7 +1082,7 @@ rule mixture_correlation:
 rule summary_normalization_mixtures:
     input:
         noiseq_objs=expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{{experiment}}_mixture_summary.rds"), norm_method = normalization_methods, tool=user_tools),
-        script=SCRIPTS + "/summary_mixtures.R",
+        script=SCRIPTS + "/summary/summary_mixtures.R",
     output:
         summary_df = os.path.join(config["output_dir"], "{experiment}_normalization_mixture_summary.csv"),
         summary_correlation = report(
@@ -1115,7 +1115,7 @@ rule summary_normalization_mixtures:
 rule summary_normalization_sirv:
     input:
         noiseq_objs=expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{{experiment}}_sirv_summary.rds"), norm_method = normalization_methods, tool=user_tools),
-        script=SCRIPTS + "/summary_sirv.R",
+        script=SCRIPTS + "/summary/summary_sirv.R",
     output:
         summary_df = os.path.join(config["output_dir"], "{experiment}_normalization_sirv_summary.csv"),
         summary_correlation = report(
@@ -1157,7 +1157,7 @@ rule summary_normalization_sirv:
 rule summary_sensitivity_sirv:
     input:
         sensitivity_objs=expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{{experiment}}_sirv_sensitivity.csv"), tool=user_tools),
-        script=SCRIPTS + "/summary_sensitivity.R",
+        script=SCRIPTS + "/summary/summary_sensitivity.R",
     output:
         summary_df = os.path.join(config["output_dir"], "{experiment}_sensitivity_sirv_summary.csv"),
     conda:
@@ -1181,7 +1181,7 @@ rule summary_sensitivity_sirv:
 rule summary_normalization_ercc:
     input:
         noiseq_objs=expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{{experiment}}_ercc_summary.rds"), norm_method = normalization_methods, tool=user_tools),
-        script=SCRIPTS + "/summary_sirv.R",
+        script=SCRIPTS + "/summary/summary_sirv.R",
     output:
         summary_df = os.path.join(config["output_dir"], "{experiment}_normalization_ercc_summary.csv"),
         summary_correlation = report(
@@ -1223,7 +1223,7 @@ rule summary_normalization_ercc:
 rule summary_sensitivity_ercc:
     input:
         sensitivity_objs=expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{{experiment}}_ercc_sensitivity.csv"), tool=user_tools),
-        script=SCRIPTS + "/summary_sensitivity.R",
+        script=SCRIPTS + "/summary/summary_sensitivity.R",
     output:
         summary_df = os.path.join(config["output_dir"], "{experiment}_sensitivity_ercc_summary.csv"),
     conda:
@@ -1247,7 +1247,7 @@ rule summary_sensitivity_ercc:
 rule summary_normalization_sr:
     input:
         noiseq_objs=expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{{experiment}}_sr_summary.rds"), norm_method = normalization_methods, tool=user_tools),
-        script=SCRIPTS + "/summary_sr.R",
+        script=SCRIPTS + "/summary/summary_sr.R",
     output:
         summary_df = os.path.join(config["output_dir"], "{experiment}_normalization_sr_summary.csv"),
         summary_correlation = report(
@@ -1282,7 +1282,7 @@ rule summary_normalization_sr:
 rule summary_normalization_tusco:
     input:
         noiseq_objs=expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{{experiment}}_tusco_summary.rds"), norm_method = normalization_methods, tool=user_tools),
-        script=SCRIPTS + "/summary_sr.R",
+        script=SCRIPTS + "/summary/summary_sr.R",
     output:
         summary_df = os.path.join(config["output_dir"], "{experiment}_normalization_tusco_summary.csv"),
         summary_correlation = report(
@@ -1317,7 +1317,7 @@ rule summary_normalization_tusco:
 rule summary_normalization_sr_gene_level:
     input:
         noiseq_objs=expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{{experiment}}_gene_level_sr_summary.rds"), norm_method = normalization_methods, tool=user_tools),
-        script=SCRIPTS + "/summary_sr.R",
+        script=SCRIPTS + "/summary/summary_sr.R",
     output:
         summary_df = os.path.join(config["output_dir"], "{experiment}_gene_level_normalization_sr_summary.csv"),
         summary_correlation = report(
@@ -1360,7 +1360,7 @@ rule summary_combined_correlation:
         sirv_objs=rules.summary_normalization_sirv.output.summary_df if config.get("sirv_analysis", False) else [],
         ercc_objs=rules.summary_normalization_ercc.output.summary_df if config.get("ERCC_counts", False) else [],
         tusco_objs=rules.summary_normalization_tusco.output.summary_df if config.get("tusco_list", False) else [],
-        script=SCRIPTS + "/summary_combined_correlation.R",
+        script=SCRIPTS + "/summary/summary_combined_correlation.R",
     output:
         summary_png=report(
             os.path.join(config["output_dir"], "{experiment}_combined_correlation.png"),
@@ -1398,7 +1398,7 @@ rule summary_combined_correlation:
 rule summary_sqanti:
     input:
         sqanti_csvs=expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{{experiment}}_SQ_counts_per_sample.csv"), tool=user_tools),
-        script=SCRIPTS + "/summary_sqanti.R",
+        script=SCRIPTS + "/summary/summary_sqanti.R",
     output:
         summary_df = os.path.join(config["output_dir"], "{experiment}_sqanti_summary.csv"),
         summary_plot = report(
@@ -1435,7 +1435,7 @@ rule summary_sqanti_global:
     input:
         sqanti_csvs=expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{{experiment}}_SQ_counts_global.csv"), tool=user_tools),
         categories_prefiltered=expand(os.path.join(config["output_dir"], "{tool}", "NOIseq","{{experiment}}_structural_category.tsv"), tool=user_tools),
-        script=SCRIPTS + "/summary_sqanti_global.R",
+        script=SCRIPTS + "/summary/summary_sqanti_global.R",
     output:
         summary_df = os.path.join(config["output_dir"], "{experiment}_sqanti_summary_global.csv"),
     conda:

@@ -78,7 +78,7 @@ rule kallisto_sr_transcriptome_stats:
     input:
         transcriptome_stats=rules.transcriptome_stats.output.output,
         counts=rules.kallisto_counts_sr.output.counts,
-        script=SCRIPTS + "/expressed_transcripts.R"
+        script=SCRIPTS + "/analysis/expressed_transcripts.R"
     output:
         transcriptome_stats=os.path.join(config["output_dir"], "kallisto_sr","NOIseq",
                                           "{experiment}_transcript_models.tsv"),

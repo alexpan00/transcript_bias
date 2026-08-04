@@ -15,7 +15,7 @@ rule isoquant_db:
     benchmark:
         BENCHMARKS + "/isoquant_db/{experiment}_isoquant_db.txt"
     script:
-        SCRIPTS + "/isoquant_db.py"
+        SCRIPTS + "/preprocessing/isoquant_db.py"
 
 
 # This rule runs IsoQuant to perform transcript reconstruction and quantification.
@@ -51,7 +51,7 @@ rule isoquant_bed:
     input:
         gtf=rules.isoquant.output.isoquant_gtf,
         gtf2bed=rules.prepare_tama.output.gtf2bed,
-        script=SCRIPTS + "/gtf2bed.sh"
+        script=SCRIPTS + "/preprocessing/gtf2bed.sh"
     output:
         bed=os.path.join(config["output_dir"], "isoquant","tama","{experiment}","{condition}.bed")
     conda:

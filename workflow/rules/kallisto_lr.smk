@@ -129,7 +129,7 @@ rule kallisto_counts:
         counts=rules.kallisto_tcc.output.output_mtx,
         transcripts_ids=rules.kallisto_tcc.output.trans_ids,
         metadata_csv=config["metadata"],
-        script=SCRIPTS + "/counts_kallisto.py"
+        script=SCRIPTS + "/quantification/counts_kallisto.py"
     output:
         counts=os.path.join(config["output_dir"], "kallisto","NOIseq", "{experiment}_counts.tsv")
     conda:
@@ -149,7 +149,7 @@ rule kallisto_transcriptome_stats:
     input:
         transcriptome_stats=rules.transcriptome_stats.output.output,
         counts=rules.kallisto_counts.output.counts,
-        script=SCRIPTS + "/expressed_transcripts.R"
+        script=SCRIPTS + "/analysis/expressed_transcripts.R"
     output:
         transcriptome_stats=os.path.join(config["output_dir"], "kallisto","NOIseq",
                                           "{experiment}_transcript_models.tsv"),

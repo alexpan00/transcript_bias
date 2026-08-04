@@ -2,7 +2,7 @@
 rule whitelist_transcripts:
     input:
         NOISeq_object=rules.NOIseq_object.output.noiseq_obj,
-        script=os.path.join(SCRIPTS, "get_transcripts_ids.R")
+        script=os.path.join(SCRIPTS, "utils", "get_transcripts_ids.R")
     output:
         transcripts_ids=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{experiment}_transcripts_ids.txt")
     conda:
@@ -26,7 +26,7 @@ rule preprocess_gtf_transcript_ids:
     input:
         gtf=os.path.join(config["output_dir"], "{tool}","tama", "{experiment}","merged.gtf"),
         collapse_map=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{experiment}_collapse_map.csv"),
-        script=os.path.join(SCRIPTS, "remap_gtf_transcript_ids.py")
+        script=os.path.join(SCRIPTS, "preprocessing", "remap_gtf_transcript_ids.py")
     output:
         preprocessed_gtf=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{experiment}_remapped.gtf")
     conda:
@@ -72,7 +72,7 @@ rule filter_gtf_transcripts:
 rule generate_UJC_results:
     input:
         transcripts=rules.filter_gtf_transcripts.output.filtered_tlf,
-        script=os.path.join(SCRIPTS, "get_ujc_from_tlf.py")
+        script=os.path.join(SCRIPTS, "quantification", "get_ujc_from_tlf.py")
     output:
         ujc=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{experiment}_UJC.tsv")
     conda:
@@ -95,7 +95,7 @@ rule generate_UJC_results:
 rule generate_UJC_upset_plot:
     input:
         ujcs=expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{{experiment}}_UJC.tsv"), tool=user_tools),
-        script=os.path.join(SCRIPTS, "plot_ujc_upset.R")
+        script=os.path.join(SCRIPTS, "plotting", "plot_ujc_upset.R")
     output:
         plot=os.path.join(config["output_dir"], "{experiment}_UJC_upset.png"),
         table=os.path.join(config["output_dir"], "{experiment}_UJC_summary.tsv")

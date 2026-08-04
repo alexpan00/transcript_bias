@@ -4,7 +4,7 @@
 
 import pandas as pd
 import os
-from scripts.utils import (
+from scripts.utils.utils import (
     generic_memory, align_memory, group_by_condition, sqanti_memory, 
     sqanti_time, sqanti_queue, format_sjtab, check_tools, 
     group_by_sample, NOISeq_memory, flair_memory, index_memory,

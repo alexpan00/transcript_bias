@@ -105,7 +105,7 @@ rule oarfish_quantify:
 rule oarfish_merge:
     input:
         quant=expand(os.path.join(config["output_dir"], "oarfish", "02_quantify", "{sample}.quant"), sample=metadata["sample"]),
-        script=SCRIPTS + "/merge_oarfish.py"
+        script=SCRIPTS + "/quantification/merge_oarfish.py"
     output:
         merged_quant=os.path.join(config["output_dir"], "oarfish", "NOIseq", "{experiment}_counts.tsv")
     conda:
@@ -126,7 +126,7 @@ rule oarfish_transcriptome_stats:
     input:
         transcriptome_stats=rules.transcriptome_stats.output.output,
         counts=rules.oarfish_merge.output.merged_quant,
-        script=SCRIPTS + "/expressed_transcripts.R"
+        script=SCRIPTS + "/analysis/expressed_transcripts.R"
     output:
         transcriptome_stats=os.path.join(config["output_dir"], "oarfish","NOIseq",
                                           "{experiment}_transcript_models.tsv"),

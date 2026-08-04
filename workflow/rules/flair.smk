@@ -79,7 +79,7 @@ rule flair_transcriptome:
 rule deduplicate_gtf_names:
     input:
         gtf=rules.flair_transcriptome.output.gtf,
-        script=SCRIPTS + "/dedup_gtf_names.py"
+        script=SCRIPTS + "/preprocessing/dedup_gtf_names.py"
     output:
         gtf=os.path.join(config["output_dir"], "flair", "01_transcriptome", "{experiment}","{condition}.isoforms.dedup.gtf")
     conda:
@@ -164,7 +164,7 @@ rule flair_bed:
     input:
         gtf=rules.deduplicate_gtf_names.output.gtf,
         gtf2bed=rules.prepare_tama.output.gtf2bed,
-        script=SCRIPTS + "/gtf2bed.sh"
+        script=SCRIPTS + "/preprocessing/gtf2bed.sh"
     output:
         bed=os.path.join(config["output_dir"], "flair","tama","{experiment}","{condition}.bed")
     conda:

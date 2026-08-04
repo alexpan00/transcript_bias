@@ -2,7 +2,7 @@
 rule bambu:
     input:
         bam=lambda wildcards: grouped[wildcards.condition]["aligned"],
-        script=SCRIPTS + "/bambu.R"
+        script=SCRIPTS + "/quantification/bambu.R"
     output:
         bambu_gtf=os.path.join(config["output_dir"], "bambu","{experiment}","{condition}.gtf"),
         bambu_counts=os.path.join(config["output_dir"], "bambu","{experiment}","{condition}_counts.tsv")
@@ -28,7 +28,7 @@ rule bambu:
 rule fix_bambu_gtf:
     input:
         gtf=rules.bambu.output.bambu_gtf,
-        script=SCRIPTS + "/fix_bambu_gtf.py"
+        script=SCRIPTS + "/preprocessing/fix_bambu_gtf.py"
     output:
         fixed_gtf=os.path.join(config["output_dir"], "bambu","{experiment}","{condition}_fixed.gtf")
     conda:
@@ -52,7 +52,7 @@ rule bambu_bed:
     input:
         gtf=rules.fix_bambu_gtf.output.fixed_gtf,
         gtf2bed=rules.prepare_tama.output.gtf2bed,
-        script=SCRIPTS + "/gtf2bed.sh",
+        script=SCRIPTS + "/preprocessing/gtf2bed.sh",
     output:
         bed=os.path.join(config["output_dir"], "bambu","tama","{experiment}","{condition}.bed")
     conda:

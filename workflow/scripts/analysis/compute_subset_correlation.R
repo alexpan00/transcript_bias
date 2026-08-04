@@ -16,17 +16,24 @@ get_script_dir <- function() {
 }
 
 source_script <- function(script_name) {
+  categories <- c(".", "plotting", "analysis", "normalization", "preprocessing", "quantification", "summary", "utils")
   s_dir <- get_script_dir()
-  target <- file.path(s_dir, script_name)
-  if (file.exists(target)) {
-    source(target)
-  } else if (file.exists(file.path("workflow/scripts", script_name))) {
-    source(file.path("workflow/scripts", script_name))
-  } else if (file.exists(file.path("scripts", script_name))) {
-    source(file.path("scripts", script_name))
-  } else {
-    source(script_name)
+  for (cat in categories) {
+    cands <- c(
+      file.path(s_dir, cat, script_name),
+      file.path(s_dir, script_name),
+      file.path("workflow/scripts", cat, script_name),
+      file.path("scripts", cat, script_name),
+      file.path(cat, script_name)
+    )
+    for (cand in cands) {
+      if (file.exists(cand)) {
+        source(cand)
+        return(invisible(TRUE))
+      }
+    }
   }
+  source(script_name)
 }
 
 source_script("corplot.R")

@@ -81,7 +81,7 @@ rule tama_merge_counts:
     input:
         counts_manifest=os.path.join(config["output_dir"], "{pipeline}","tama","{experiment}","count_manifest.tsv"),
         tama_file=rules.tama_merge.output.merge,
-        merge_script=SCRIPTS + "/merge_quantification.R"
+        merge_script=SCRIPTS + "/quantification/merge_quantification.R"
     output:
         counts=os.path.join(config["output_dir"], "{pipeline}","tama","{experiment}","{experiment}_counts.tsv")
     conda:
@@ -183,7 +183,7 @@ rule assign_reference:
     input:
         sqanti3_classification=rules.sqanti3_merge.output.sqanti3_classification,
         quantification=rules.tama_merge_counts.output.counts,
-        script=SCRIPTS + "/assign_reference.py",
+        script=SCRIPTS + "/preprocessing/assign_reference.py",
         transcriptome_stats=rules.tama_transcriptome_stats.output.transcriptome_stats,
     output:
         condensed_class=os.path.join(config["output_dir"], "{pipeline}","NOIseq", "{experiment}_classification.txt"),
