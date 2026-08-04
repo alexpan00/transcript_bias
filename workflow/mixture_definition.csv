@@ -1,0 +1,5 @@
+Mixture,Component,Proportion
+B20K80,Brain,0.2
+B20K80,Kidney,0.8
+B80K20,Brain,0.8
+B80K20,Kidney,0.2

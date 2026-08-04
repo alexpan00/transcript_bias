@@ -1,0 +1,7 @@
+chr1	test	gene	1	120	.	+	.	gene_id "GENE1"; gene_name "GENE1";
+chr1	test	transcript	1	120	.	+	.	gene_id "GENE1"; transcript_id "TX1"; gene_name "GENE1";
+chr1	test	exon	1	60	.	+	.	gene_id "GENE1"; transcript_id "TX1"; exon_number "1";
+chr1	test	exon	80	120	.	+	.	gene_id "GENE1"; transcript_id "TX1"; exon_number "2";
+SIRV101	test	gene	1	60	.	+	.	gene_id "SIRV101"; gene_name "SIRV101";
+SIRV101	test	transcript	1	60	.	+	.	gene_id "SIRV101"; transcript_id "SIRV101"; gene_name "SIRV101";
+SIRV101	test	exon	1	60	.	+	.	gene_id "SIRV101"; transcript_id "SIRV101"; exon_number "1";

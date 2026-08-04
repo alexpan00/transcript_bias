@@ -1,0 +1,9 @@
+name: cqn_env
+channels:
+  - bioconda
+  - conda-forge
+  - r
+  - defaults
+dependencies:
+  - bioconductor-cqn
+  - r-biocmanager

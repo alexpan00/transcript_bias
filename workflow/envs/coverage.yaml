@@ -1,0 +1,15 @@
+name: coverage_env
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - r-base=4.3
+  - bioconductor-genomicranges
+  - bioconductor-rsamtools
+  - bioconductor-genomicalignments
+  - bioconductor-genomicfeatures
+  - bioconductor-rtracklayer
+  - r-dplyr
+  - r-ggplot2
+  - r-hexbin

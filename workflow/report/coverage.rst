@@ -1,0 +1,1 @@
+Coverage plot for sample {{ snakemake.wildcards.sample }}.

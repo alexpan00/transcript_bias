@@ -1,0 +1,6 @@
+name: requant_env
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - pyranges

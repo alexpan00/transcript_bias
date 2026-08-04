@@ -1,0 +1,7 @@
+name: tidy_env
+channels:
+  - conda-forge
+  - base
+dependencies:
+  - r-stringr
+  - r-tidyverse

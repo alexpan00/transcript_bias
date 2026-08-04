@@ -1,0 +1,15 @@
+name: flair3
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12
+  - flair=3.0.0
+  - bedtools
+  - samtools
+  - minimap2
+  - pysam
+  - numpy
+  - scipy
+  - matplotlib-base

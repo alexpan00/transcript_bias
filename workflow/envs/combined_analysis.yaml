@@ -1,0 +1,19 @@
+name: NOIseq_env
+channels:
+  - bioconda
+  - conda-forge
+  - r
+  - defaults
+dependencies:
+  - bioconductor-noiseq
+  - bioconductor-cqn
+  - r-ggh4x
+  - r-biocmanager
+  - r-pheatmap
+  - r-ggplot2
+  - r-gridExtra
+  - r-tidyverse=2.0.0
+  - r-hexbin
+  - r-ggridges
+  - r-mgcv
+  - r-patchwork

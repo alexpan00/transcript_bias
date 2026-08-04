@@ -1,0 +1,6 @@
+name: oarfish_env
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - oarfish=0.7.2=h5ca1c30_0

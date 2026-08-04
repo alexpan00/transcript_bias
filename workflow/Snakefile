@@ -1,0 +1,138 @@
+################################################################################
+# Imports
+################################################################################
+
+import pandas as pd
+import os
+from scripts.utils import (
+    generic_memory, align_memory, group_by_condition, sqanti_memory, 
+    sqanti_time, sqanti_queue, format_sjtab, check_tools, 
+    group_by_sample, NOISeq_memory, flair_memory, index_memory,
+    flair_time, flair_queue, extra_memory, flair_transcriptome_memory, bambu_memory,
+    get_rule_resource
+)
+
+################################################################################
+# Configuration
+################################################################################
+
+configfile: "config/config.yml"
+
+# Load optional per-rule resource overrides
+resources_file = config.get("resources_file", "config/resources.yaml")
+if os.path.exists(resources_file) and "resources" not in config:
+    import yaml
+    with open(resources_file, "r") as f:
+        config["resources"] = yaml.safe_load(f) or {}
+
+# Rules that do not need to be submitted to the cluster
+localrules: 
+    flair_manifest, flair_bed, prepare_sqanti, prepare_tama, tama_manifest, 
+    flair_counts, bambu_counts, isoquant_counts, 
+    oarfish_transcriptome_stats, kallisto_transcriptome_stats, 
+    kallisto_sr_transcriptome_stats, prepare_file_to_sample, kallisto_transcript_to_gene,
+    kallisto_transcript_to_gene_sr, oarfish_transcript_to_gene
+
+# Input data
+CAGE_FILE = config.get("cage", "")
+TTS_FILE = config.get("tts", "")
+if (SR_FASTQ:= config.get("sr_fastq", None)) and config.get("sr_analysis", False):
+    SR_FASTQ = pd.read_csv(SR_FASTQ, sep="\t", index_col=0)
+
+# Available tools
+tools = ["kallisto", "isoquant", "bambu", "oarfish", "flair"]
+pipelines = ["bambu", "isoquant", "flair"]
+
+# Set output directories
+config["output_dir"] = os.path.abspath(config["output_dir"])
+tama_dir = config.get("tama_dir", "tama")
+config["sqanti_dir"] = sqanti_dir = config.get("sqanti_dir", "SQANTI3")
+
+# Load and process metadata
+metadata = pd.read_csv(config["metadata"])
+grouped = group_by_condition(metadata)
+conditions = list(grouped.keys())
+grouped_by_sample = group_by_sample(metadata)
+
+# Get user-selected tools and validate them
+user_tools = config.get("tools", tools)
+check_tools(user_tools, tools)
+user_pipelines = [tool for tool in user_tools if tool in pipelines]
+
+# normalizatiion methods
+normalization_methods =  config.get("normalization_methods", [])
+
+
+# Wildcard constraints
+wildcard_constraints:
+    experiment=config["experiment"],
+    condition="|".join(conditions),
+    sample="|".join(grouped_by_sample.keys()),
+    tool="|".join(user_tools),
+    pipeline="|".join(user_pipelines),
+    factor = "|".join(config.get("report_factors", [])),
+    norm_method="|".join(normalization_methods),
+
+# Define paths for scripts, environments, logs, benchmarks, and reports
+SCRIPTS = os.path.abspath("scripts")
+REPORT = os.path.abspath("report")
+ENVS = os.path.abspath(config.get("envs", "envs"))
+LOGS = os.path.abspath(config.get("logs", "logs"))
+BENCHMARKS = os.path.abspath(config.get("benchmarks", "benchmarks"))
+
+################################################################################
+# Rule Includes
+################################################################################
+
+include: "rules/preprocessing.smk"
+include: "rules/tama.smk"
+include: "rules/isoquant.smk"
+include: "rules/bambu.smk"
+include: "rules/oarfish.smk"
+include: "rules/kallisto_lr.smk"
+include: "rules/kallisto_sr.smk"
+include: "rules/flair.smk"
+include: "rules/SIRVs.smk"
+include: "rules/analysis.smk"
+include: "rules/ratio_counts.smk"
+include: "rules/UJC.smk"
+
+################################################################################
+# Main Rule
+################################################################################
+
+rule all:
+    input:
+        # Differential expression analysis results
+        expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "."+config["experiment"]+ "_{normalization_method}"), tool=user_tools, normalization_method=normalization_methods),
+        # Long vs. short read comparison
+        expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", "."+config["experiment"]+"_long_vs_short"), tool=user_tools, normalization_method=normalization_methods) if (SR_FASTQ is not None and config.get("sr_analysis", False)) else [],
+        # SIRV analysis
+        expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "."+config["experiment"]+"_{normalization_method}_SIRV"), tool=user_tools, normalization_method=normalization_methods) if config.get("sirv_analysis", False) else [],
+        expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "."+config["experiment"]+"_{normalization_method}_SIRV_contrasts"), tool=user_tools, normalization_method=normalization_methods) if config.get("sirv_analysis", False) else [],
+        # Isoforms per gene analysis
+        expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "."+config["experiment"]+"_iso_per_gene"), tool=user_pipelines) if config.get("iso_per_gene_analysis", False) else [],
+        # Replicability analysis
+        expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "."+config["experiment"]+ "_replicability"), tool=user_tools) if config.get("replicability_analysis", False) else [],
+        # Coverage plots
+        expand(os.path.join(config["output_dir"], "coverage", "{sample}_coverage.png"), sample=grouped_by_sample.keys()) if config.get("coverage_analysis", False) else [],
+        # normalization summary plot
+        os.path.join(config["output_dir"], f"{config['experiment']}_normalization_length_sum.png"),
+        os.path.join(config["output_dir"], f"{config['experiment']}_normalization_sirvs_correlation.png") if config.get("sirv_analysis", False) else [],
+        os.path.join(config["output_dir"], f"{config['experiment']}_normalization_sr_correlation.png") if (SR_FASTQ is not None and config.get("sr_analysis", False)) else [],
+        os.path.join(config["output_dir"], f"{config['experiment']}_gene_level_normalization_sr_correlation.png") if (SR_FASTQ is not None and config.get("sr_analysis", False)) else [],
+        os.path.join(config["output_dir"], f"{config['experiment']}_normalization_mixtures_correlation.png") if config.get("mixture_definition", False) else [],
+        os.path.join(config["output_dir"], f"{config['experiment']}_normalization_tusco_summary.csv") if config.get("tusco_list", False) and (SR_FASTQ is not None and config.get("sr_analysis", False)) else [],
+        os.path.join(config["output_dir"], f"{config['experiment']}_combined_correlation.png") if (SR_FASTQ is not None and config.get("sr_analysis", False)) else [],
+        os.path.join(config["output_dir"], f"{config['experiment']}_normalization_ercc_summary.csv") if config.get("ERCC_counts", False) else [],
+        os.path.join(config["output_dir"], f"{config['experiment']}_sqanti_summary.csv"),
+        os.path.join(config["output_dir"], f"{config['experiment']}_sqanti_summary_global.csv"),
+        os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", f".sr_{config['experiment']}") if (SR_FASTQ is not None and config.get("sr_analysis", False)) else [],
+        os.path.join(config["output_dir"], f"{config['experiment']}_sensitivity_ercc_summary.csv") if config.get("ERCC_counts", False) else [],
+        os.path.join(config["output_dir"], f"{config['experiment']}_sensitivity_sirv_summary.csv") if config.get("sirv_analysis", False) else [],
+        # UJC results
+        expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", f"{config['experiment']}_UJC.tsv"), tool=user_tools),
+        os.path.join(config["output_dir"], f"{config['experiment']}_UJC_upset.png"),
+        os.path.join(config["output_dir"], f"{config['experiment']}_UJC_summary.tsv")
+
+

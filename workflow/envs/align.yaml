@@ -1,0 +1,7 @@
+name: align_env
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - minimap2
+  - samtools

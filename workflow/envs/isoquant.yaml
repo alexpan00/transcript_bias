@@ -1,0 +1,9 @@
+name: isoquant_env
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.8
+  - isoquant==3.6.3=hdfd78af_0
+  - gffutils
+

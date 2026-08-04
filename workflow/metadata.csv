@@ -1,0 +1,11 @@
+fastq,aligned,flnc,sample,condition,SIRV
+/path/to/data/B20K80_1.fastq,/path/to/data/B20K80_1.bam,/path/to/data/B20K80_1.bam,B20K80_1,mix2080,E2
+/path/to/data/B20K80_2.fastq,/path/to/data/B20K80_2.bam,/path/to/data/B20K80_2.bam,B20K80_2,mix2080,E2
+/path/to/data/B31.fastq,/path/to/data/B31.bam,/path/to/data/B31.bam,B31,brain,E0
+/path/to/data/B32.fastq,/path/to/data/B32.bam,/path/to/data/B32.bam,B32,brain,E0
+/path/to/data/B33.fastq,/path/to/data/B33.bam,/path/to/data/B33.bam,B33,brain,E0
+/path/to/data/B80K20_1.fastq,/path/to/data/B80K20_1.bam,/path/to/data/B80K20_1.bam,B80K20_1,mix8020,E0
+/path/to/data/B80K20_2.fastq,/path/to/data/B80K20_2.bam,/path/to/data/B80K20_2.bam,B80K20_2,mix8020,E0
+/path/to/data/K31.fastq,/path/to/data/K31.bam,/path/to/data/K31.bam,K31,kidney,E1
+/path/to/data/K32.fastq,/path/to/data/K32.bam,/path/to/data/K32.bam,K32,kidney,E1
+/path/to/data/K33.fastq,/path/to/data/K33.bam,/path/to/data/K33.bam,K33,kidney,E1

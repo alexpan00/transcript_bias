@@ -1,0 +1,47 @@
+# ==============================================================================
+# Per-Rule Resource Configuration Overrides
+# ==============================================================================
+# In this file, you can override threads, memory (mem_mb), runtime, and SLURM
+# parameters for any rule individually.
+# If a rule or parameter is omitted, the workflow automatically falls back to
+# its default dynamic calculation or preset resource values.
+# ==============================================================================
+
+# Default fallback values for all rules (optional)
+default:
+  slurm_extra: "'--qos=short'"
+
+# Rule-specific resource overrides
+# Example rule entries:
+
+bambu:
+  threads: 8
+  # mem_mb: 32000
+  # slurm_extra: "'--qos=short'"
+
+isoquant:
+  threads: 8
+  # mem_mb: 64000
+  # slurm_extra: "'--qos=short'"
+
+kallisto_bus:
+  threads: 8
+  # mem_mb: 7000
+
+kallisto_tcc:
+  threads: 8
+  # mem_mb: 10240
+
+oarfish_quantify:
+  threads: 8
+  # mem_mb: 10240
+
+flair_collapse:
+  threads: 8
+  # mem_mb: 16000
+
+NOIseq:
+  # mem_mb: 10240
+
+SIRV_validation:
+  # mem_mb: 10240

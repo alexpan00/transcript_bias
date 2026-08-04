@@ -1,0 +1,1 @@
+SQANTI3 structural categories for {{ snakemake.wildcards.experiment }} using pipeline {{ snakemake.wildcards.tool }}.
