@@ -34,9 +34,13 @@ counts <- inner_join(counts, t2g, by = "isoform")
 # remove trasncripts from samples in which they are not expressed
 counts_long <- counts %>% 
   pivot_longer(!c(isoform, associated_gene), names_to = "sample", values_to = "Counts")
-# add tissue
-cond = colnames(pData(long_obj))[2]
-counts_long <- full_join(counts_long, pData(long_obj)[,c("sample", cond)], by = "sample")
+# add tissue/condition
+cond <- if (ncol(pData(long_obj)) >= 2) colnames(pData(long_obj))[2] else colnames(pData(long_obj))[1]
+pData_df <- pData(long_obj)
+if (!"sample" %in% colnames(pData_df)) {
+  pData_df$sample <- rownames(pData_df)
+}
+counts_long <- full_join(counts_long, pData_df[, unique(c("sample", cond)), drop = FALSE], by = "sample")
 
 # mean by condition
 mean_transcript_counts_long <- counts_long %>% 

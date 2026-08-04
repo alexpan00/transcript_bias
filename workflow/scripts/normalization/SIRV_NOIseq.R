@@ -38,7 +38,15 @@ counts <- counts[rowSums(counts) > 0, , drop = FALSE]
 
 # Read factors
 factors <- read.table(factors, header = TRUE, sep = ",")
-factors$Pool_Set <- paste(factors$Pool, factors$SIRV, sep = "_")
+if ("Pool" %in% colnames(factors) && "SIRV" %in% colnames(factors)) {
+  factors$Pool_Set <- paste(factors$Pool, factors$SIRV, sep = "_")
+} else if ("condition" %in% colnames(factors) && "SIRV" %in% colnames(factors)) {
+  factors$Pool_Set <- paste(factors$condition, factors$SIRV, sep = "_")
+} else if (ncol(factors) >= 2) {
+  factors$Pool_Set <- paste(factors[, 2], factors[, min(3, ncol(factors))], sep = "_")
+} else {
+  factors$Pool_Set <- factors[, 1]
+}
 
 sirv_info <- read.csv(sirv_info, row.names = 1)
 

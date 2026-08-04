@@ -158,8 +158,8 @@ conds <- levels(pData(mydata)[,2])
 sirv_contrasts <- combn(conds, 2)
 
 # reduce metadata
-sirv_cond <- pData(mydata)[,c(main_factor, "SIRV")] %>% 
-  distinct()
+sirv_col <- if ("SIRV" %in% colnames(pData(mydata))) "SIRV" else (if (ncol(pData(mydata)) >= 3) colnames(pData(mydata))[3] else main_factor)
+sirv_cond <- pData(mydata)[, unique(c(main_factor, sirv_col)), drop = FALSE] %>% distinct()
 # --- Evaluate contrasts --- #
 # E1 vs E0
 for (i in 1:ncol(sirv_contrasts)){
@@ -167,8 +167,8 @@ for (i in 1:ncol(sirv_contrasts)){
   cond2 <- sirv_contrasts[2, i]
   cond_contrast <- paste(cond1, cond2, sep = "_")
   
-  sirv_cond1 <- as.character(sirv_cond[sirv_cond[,main_factor] == cond1, "SIRV"])
-  sirv_cond2 <- as.character(sirv_cond[sirv_cond[,main_factor] == cond2, "SIRV"])
+  sirv_cond1 <- if (sirv_col %in% colnames(sirv_cond)) as.character(sirv_cond[sirv_cond[,main_factor] == cond1, sirv_col]) else "Unknown"
+  sirv_cond2 <- if (sirv_col %in% colnames(sirv_cond)) as.character(sirv_cond[sirv_cond[,main_factor] == cond2, sirv_col]) else "Unknown"
   
   sirv_contrast <- paste(sirv_cond1, sirv_cond2, sep = "_")
   if (!sirv_contrast %in% colnames(sirv_info)){

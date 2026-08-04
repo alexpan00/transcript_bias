@@ -49,7 +49,8 @@ for (long_obj in long_objs){
     mydata_cpm <- cpm(mydata_cpm)
   }
   # select the main factor
-  main_factor <- pData(mydata)[,2] 
+  main_factor <- if (ncol(pData(mydata)) >= 2) pData(mydata)[,2] else pData(mydata)[,1]
+  main_factor <- as.factor(main_factor)
   conds <- levels(main_factor)
 
   # get the mean counts per condition
