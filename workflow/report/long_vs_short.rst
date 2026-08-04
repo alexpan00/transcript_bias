@@ -1,2 +1,6 @@
-Correlation plot between long and short read quantification for 
-{{ snakemake.wildcards.experiment }} using pipeline {{ snakemake.wildcards.tool }}.
+Long-Read vs. Short-Read Quantification Comparison
+===================================================
+
+Scatter plot and correlation evaluation comparing long-read quantification (**{{ snakemake.wildcards.tool }}**) against short-read quantification (**kallisto_sr**) for experiment **{{ snakemake.wildcards.experiment }}**.
+
+Evaluates cross-platform agreement in transcript and gene-level expression estimates.
