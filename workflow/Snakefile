@@ -50,7 +50,7 @@ config["sqanti_dir"] = sqanti_dir = config.get("sqanti_dir", "SQANTI3")
 
 # Load and process metadata
 if config.get("factors"):
-    validate_samples_and_factors(config["metadata"], config["factors"])
+    validate_samples_and_factors(config["metadata"], config["factors"], config.get("report_factors", []))
 
 metadata = pd.read_csv(config["metadata"])
 grouped = group_by_condition(metadata)

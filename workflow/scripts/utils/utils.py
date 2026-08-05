@@ -88,10 +88,10 @@ def check_tools(user_tools, tools):
         if tool not in tools:
             raise ValueError(f"Tool '{tool}' not implemented. Available tools are: {', '.join(tools)}")
 
-def validate_samples_and_factors(metadata_path, factors_path):
+def validate_samples_and_factors(metadata_path, factors_path, report_factors=None):
     """
     Validates that metadata and factors files exist, contain required columns,
-    and have matching sample sets with no orphan samples.
+    and have matching sample sets, factor columns, and condition concordances.
     """
     import pandas as pd
     if not os.path.exists(metadata_path):
@@ -129,16 +129,27 @@ def validate_samples_and_factors(metadata_path, factors_path):
             msg += f"  - Samples in factors but missing from metadata ({metadata_path}): {sorted(list(in_factor_not_meta))}\n"
         raise ValueError(msg)
 
-    # Check condition concordance if 'condition' (or 'Condition') column exists in both
-    meta_cond_col = "condition" if "condition" in metadata_df.columns else ("Condition" if "Condition" in metadata_df.columns else None)
-    factor_cond_col = "condition" if "condition" in factors_df.columns else ("Condition" if "Condition" in factors_df.columns else None)
+    # Validate report_factors if specified
+    if report_factors:
+        missing_factors = []
+        for factor in report_factors:
+            if factor not in factors_df.columns:
+                parts = factor.split("_")
+                if not (len(parts) > 1 and all(p in factors_df.columns for p in parts)):
+                    missing_factors.append(factor)
+        if missing_factors:
+            raise ValueError(f"The following factor(s) specified in 'report_factors' were not found in factors file ({factors_path}): {missing_factors}\nAvailable columns in factors file: {list(factors_df.columns)}")
 
-    if meta_cond_col and factor_cond_col:
-        merged = pd.merge(metadata_df[["sample", meta_cond_col]], factors_df[[factor_sample_col, factor_cond_col]], left_on="sample", right_on=factor_sample_col)
-        mismatched = merged[merged[meta_cond_col].astype(str) != merged[factor_cond_col].astype(str)]
-        if not mismatched.empty:
-            details = [f"Sample '{row['sample']}': metadata={meta_cond_col}='{row[meta_cond_col]}' vs factors={factor_cond_col}='{row[factor_cond_col]}'" for _, row in mismatched.iterrows()]
-            raise ValueError(f"Condition mismatch between metadata ({metadata_path}) and factors ({factors_path}):\n  - " + "\n  - ".join(details))
+    # Check condition concordance if a column with the same name exists in both metadata and factors (e.g. 'condition' vs 'Condition')
+    meta_cols = [c for c in metadata_df.columns if c != "sample"]
+    for mc in meta_cols:
+        matching_fc = next((fc for fc in factors_df.columns if fc.lower() == mc.lower() and fc != factor_sample_col), None)
+        if matching_fc:
+            merged = pd.merge(metadata_df[["sample", mc]], factors_df[[factor_sample_col, matching_fc]], left_on="sample", right_on=factor_sample_col)
+            mismatched = merged[merged[mc].astype(str) != merged[matching_fc].astype(str)]
+            if not mismatched.empty:
+                details = [f"Sample '{row['sample']}': metadata={mc}='{row[mc]}' vs factors={matching_fc}='{row[matching_fc]}'" for _, row in mismatched.iterrows()]
+                raise ValueError(f"Column value mismatch between metadata ({metadata_path}) and factors ({factors_path}):\n  - " + "\n  - ".join(details))
 
 def get_rule_resource(config, rule_name, resource_key, default_val_or_func):
     """
