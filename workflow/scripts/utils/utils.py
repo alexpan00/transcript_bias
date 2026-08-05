@@ -129,6 +129,17 @@ def validate_samples_and_factors(metadata_path, factors_path):
             msg += f"  - Samples in factors but missing from metadata ({metadata_path}): {sorted(list(in_factor_not_meta))}\n"
         raise ValueError(msg)
 
+    # Check condition concordance if 'condition' (or 'Condition') column exists in both
+    meta_cond_col = "condition" if "condition" in metadata_df.columns else ("Condition" if "Condition" in metadata_df.columns else None)
+    factor_cond_col = "condition" if "condition" in factors_df.columns else ("Condition" if "Condition" in factors_df.columns else None)
+
+    if meta_cond_col and factor_cond_col:
+        merged = pd.merge(metadata_df[["sample", meta_cond_col]], factors_df[[factor_sample_col, factor_cond_col]], left_on="sample", right_on=factor_sample_col)
+        mismatched = merged[merged[meta_cond_col].astype(str) != merged[factor_cond_col].astype(str)]
+        if not mismatched.empty:
+            details = [f"Sample '{row['sample']}': metadata={meta_cond_col}='{row[meta_cond_col]}' vs factors={factor_cond_col}='{row[factor_cond_col]}'" for _, row in mismatched.iterrows()]
+            raise ValueError(f"Condition mismatch between metadata ({metadata_path}) and factors ({factors_path}):\n  - " + "\n  - ".join(details))
+
 def get_rule_resource(config, rule_name, resource_key, default_val_or_func):
     """
     Returns a resource-resolver function usable directly inside Snakemake rule directives.
