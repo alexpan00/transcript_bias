@@ -14,9 +14,9 @@ rule kallisto_index:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/kallisto/" + config["experiment"] + "/index.log"
+        LOGS + "/" + config["experiment"] + "/kallisto" + "/index.log"
     benchmark:
-        BENCHMARKS + "/kallisto/" + config["experiment"] + "/index.txt"
+        BENCHMARKS + "/" + config["experiment"] + "/kallisto" + "/index.txt"
     params:
         tmp_dir=os.path.join(config["output_dir"], "kallisto", "01_index", "tmp") 
     shell:
@@ -40,9 +40,9 @@ rule kallisto_bus:
         mem_mb=7000,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/kallisto/" + config["experiment"] + "/bus.log"
+        LOGS + "/" + config["experiment"] + "/kallisto" + "/bus.log"
     benchmark:
-        BENCHMARKS + "/kallisto/" + config["experiment"] + "/bus.txt"
+        BENCHMARKS + "/" + config["experiment"] + "/kallisto" + "/bus.txt"
     params:
         "--long --threshold=0.8 -x bulk"
     shell:
@@ -61,9 +61,9 @@ rule bus_sort:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/kallisto/" + config["experiment"] + "/bus_sort.log"
+        LOGS + "/" + config["experiment"] + "/kallisto" + "/bus_sort.log"
     benchmark:
-        BENCHMARKS + "/kallisto/" + config["experiment"] + "/bus_sort.txt"
+        BENCHMARKS + "/" + config["experiment"] + "/kallisto" + "/bus_sort.txt"
     shell:
         "bustools sort -t {threads} -o {output.output_bus} {input.bus} > {log} 2>&1"
 
@@ -86,9 +86,9 @@ rule bus_count:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/kallisto/" + config["experiment"] + "/bus_count.log"
+        LOGS + "/" + config["experiment"] + "/kallisto" + "/bus_count.log"
     benchmark:
-        BENCHMARKS + "/kallisto/" + config["experiment"] + "/bus_count.txt"
+        BENCHMARKS + "/" + config["experiment"] + "/kallisto" + "/bus_count.txt"
     params:
         "--cm -m"
     shell:
@@ -114,9 +114,9 @@ rule kallisto_tcc:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/kallisto/" + config["experiment"] + "/tcc.log"
+        LOGS + "/" + config["experiment"] + "/kallisto" + "/tcc.log"
     benchmark:
-        BENCHMARKS + "/kallisto/" + config["experiment"] + "/tcc.txt"
+        BENCHMARKS + "/" + config["experiment"] + "/kallisto" + "/tcc.txt"
     params:
         lambda wildcards, threads: f'--long -P {"PacBio" if config["data_type"] == "pacbio" else "ONT"}' # TODO should be an input of th pipeline
     shell:       
@@ -138,9 +138,9 @@ rule kallisto_counts:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/kallisto/{experiment}_counts.log"
+        LOGS + "/{experiment}/kallisto/counts.log"
     benchmark:
-        BENCHMARKS + "/kallisto/{experiment}_counts.txt"
+        BENCHMARKS + "/{experiment}/kallisto/counts.txt"
     shell:
         "python3 {input.script} -c {input.counts} -t {input.transcripts_ids} -m {input.metadata_csv} --output {output} > {log} 2>&1"
 
@@ -158,9 +158,9 @@ rule kallisto_transcriptome_stats:
     conda:
         ENVS + "/NOIseq.yaml"
     log:
-        LOGS + "/kallisto/{experiment}_transcriptome_stats.log"
+        LOGS + "/{experiment}/kallisto/transcriptome_stats.log"
     benchmark:
-        BENCHMARKS + "/kallisto/{experiment}_transcriptome_stats.txt"
+        BENCHMARKS + "/{experiment}/kallisto/transcriptome_stats.txt"
     threads: 1
     shell:
         '''
@@ -180,8 +180,8 @@ rule kallisto_transcript_to_gene:
         ENVS + "/gffread.yaml"
     threads: 1
     log:
-        LOGS + "/kallisto/{experiment}_t2g.log"
+        LOGS + "/{experiment}/kallisto/t2g.log"
     benchmark:
-        BENCHMARKS + "/kallisto/{experiment}_t2g.txt"
+        BENCHMARKS + "/{experiment}/kallisto/t2g.txt"
     shell:
         "ln -s -r {input.t2g} {output.t2g} > {log} 2>&1"

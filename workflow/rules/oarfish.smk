@@ -12,9 +12,9 @@ rule transcriptome_fasta:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/oarfish/" + config["experiment"] + "_transcriptome_fasta.log"
+        LOGS + "/" + config["experiment"] + "/oarfish/transcriptome_fasta.log"
     benchmark:
-        BENCHMARKS + "/oarfish/" + config["experiment"] + "_transcriptome_fasta.txt"
+        BENCHMARKS + "/" + config["experiment"] + "/oarfish/transcriptome_fasta.txt"
     shell:
         "gffread -w {output} -g {input.genome} {input.annotation} > {log} 2>&1"
 
@@ -31,9 +31,9 @@ rule transcriptome_stats:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/oarfish/" + config["experiment"] + "_transcriptome_stats.log"
+        LOGS + "/" + config["experiment"] + "/oarfish/transcriptome_stats.log"
     benchmark:
-        BENCHMARKS + "/oarfish/" + config["experiment"] + "_transcriptome_stats.txt"
+        BENCHMARKS + "/" + config["experiment"] + "/oarfish/transcriptome_stats.txt"
     shell:
         "seqkit fx2tab -i -n -l -g -H {input.fasta} > {output} 2> {log}"
 
@@ -50,9 +50,9 @@ rule index_trasncriptome:
         mem_mb=index_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/oarfish/" + config["experiment"] + "_index_transcriptome.log"
+        LOGS + "/" + config["experiment"] + "/oarfish/index_transcriptome.log"
     benchmark:
-        BENCHMARKS + "/oarfish/" + config["experiment"] + "_index_transcriptome.txt"
+        BENCHMARKS + "/" + config["experiment"] + "/oarfish/index_transcriptome.txt"
     params:
         preset=f'{"map-hifi" if config["data_type"] == "pacbio" else "map-ont"}'
     shell:
@@ -72,9 +72,9 @@ rule align_transcriptome:
         mem_mb=align_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/oarfish/" + config["experiment"] + "/{sample}_align_transcriptome.log"
+        LOGS + "/" + config["experiment"] + "/oarfish" + "/{sample}_align_transcriptome.log"
     benchmark:
-        BENCHMARKS + "/oarfish/" + config["experiment"] + "/{sample}_align_transcriptome.txt"
+        BENCHMARKS + "/" + config["experiment"] + "/oarfish" + "/{sample}_align_transcriptome.txt"
     params:
         preset=f'{"map-hifi" if config["data_type"] == "pacbio" else "map-ont"}'
     shell:
@@ -93,9 +93,9 @@ rule oarfish_quantify:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/oarfish/" + config["experiment"] + "/{sample}_oarfish_quantify.log"
+        LOGS + "/" + config["experiment"] + "/oarfish" + "/{sample}_oarfish_quantify.log"
     benchmark:
-        BENCHMARKS + "/oarfish/" + config["experiment"] + "/{sample}_oarfish_quantify.txt"
+        BENCHMARKS + "/" + config["experiment"] + "/oarfish" + "/{sample}_oarfish_quantify.txt"
     params:
         prefix=os.path.join(config["output_dir"], "oarfish", "02_quantify", "{sample}")
     shell:
@@ -115,9 +115,9 @@ rule oarfish_merge:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/oarfish/{experiment}_merge.log"
+        LOGS + "/{experiment}/oarfish/merge.log"
     benchmark:
-        BENCHMARKS + "/oarfish/{experiment}_merge.txt"
+        BENCHMARKS + "/{experiment}/oarfish/merge.txt"
     shell:
         "python3 {input.script} {output} {input.quant} > {log} 2>&1"
 
@@ -135,9 +135,9 @@ rule oarfish_transcriptome_stats:
     conda:
         ENVS + "/NOIseq.yaml"
     log:
-        LOGS + "/oarfish/{experiment}_transcriptome_stats.log"
+        LOGS + "/{experiment}/oarfish/transcriptome_stats.log"
     benchmark:
-        BENCHMARKS + "/oarfish/{experiment}_transcriptome_stats.txt"
+        BENCHMARKS + "/{experiment}/oarfish/transcriptome_stats.txt"
     threads: 1
     shell:
         '''
@@ -157,8 +157,8 @@ rule oarfish_transcript_to_gene:
         ENVS + "/gffread.yaml"
     threads: 1
     log:
-        LOGS + "/oarfish/{experiment}_t2g.log"
+        LOGS + "/{experiment}/oarfish/t2g.log"
     benchmark:
-        BENCHMARKS + "/oarfish/{experiment}_t2g.txt"
+        BENCHMARKS + "/{experiment}/oarfish/t2g.txt"
     shell:
         "ln -s -r {input.t2g} {output.t2g} > {log} 2>&1"

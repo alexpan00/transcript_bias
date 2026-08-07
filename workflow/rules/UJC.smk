@@ -12,9 +12,9 @@ rule whitelist_transcripts:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{tool}/{experiment}_transcripts_ids.log"
+        LOGS + "/{experiment}/{tool}/transcripts_ids.log"
     benchmark:
-        BENCHMARKS + "/{tool}/{experiment}_transcripts_ids.txt"
+        BENCHMARKS + "/{experiment}/{tool}/transcripts_ids.txt"
     shell:
         '''
         Rscript {input.script} {input.NOISeq_object} {output.transcripts_ids} > {log} 2>&1
@@ -36,9 +36,9 @@ rule preprocess_gtf_transcript_ids:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{tool}/{experiment}_preprocess_gtf.log"
+        LOGS + "/{experiment}/{tool}/preprocess_gtf.log"
     benchmark:
-        BENCHMARKS + "/{tool}/{experiment}_preprocess_gtf.txt"
+        BENCHMARKS + "/{experiment}/{tool}/preprocess_gtf.txt"
     shell:
         '''
         python {input.script} {input.gtf} {input.collapse_map} {output.preprocessed_gtf} > {log} 2>&1
@@ -60,9 +60,9 @@ rule filter_gtf_transcripts:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{tool}/{experiment}_filter_gtf.log"
+        LOGS + "/{experiment}/{tool}/filter_gtf.log"
     benchmark:
-        BENCHMARKS + "/{tool}/{experiment}_filter_gtf.txt"
+        BENCHMARKS + "/{experiment}/{tool}/filter_gtf.txt"
     shell:
         '''
         gffread --ids {input.transcripts_ids} --tlf {input.gtf} -o {output.filtered_tlf} > {log} 2>&1
@@ -82,9 +82,9 @@ rule generate_UJC_results:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{tool}/{experiment}_ujc.log"
+        LOGS + "/{experiment}/{tool}/ujc.log"
     benchmark:
-        BENCHMARKS + "/{tool}/{experiment}_ujc.txt"
+        BENCHMARKS + "/{experiment}/{tool}/ujc.txt"
     shell:
         '''
         python {input.script} {input.transcripts} {output.ujc} > {log} 2>&1

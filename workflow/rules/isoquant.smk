@@ -11,9 +11,9 @@ rule isoquant_db:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/isoquant_db/{experiment}_isoquant_db.log"
+        LOGS + "/{experiment}/isoquant/isoquant_db.log"
     benchmark:
-        BENCHMARKS + "/isoquant_db/{experiment}_isoquant_db.txt"
+        BENCHMARKS + "/{experiment}/isoquant/isoquant_db.txt"
     script:
         SCRIPTS + "/preprocessing/isoquant_db.py"
 

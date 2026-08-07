@@ -58,9 +58,9 @@ rule kallisto_counts_sr:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/kallisto_sr/{experiment}_counts.log"
+        LOGS + "/{experiment}/kallisto_sr/counts.log"
     benchmark:
-        BENCHMARKS + "/kallisto_sr/{experiment}_counts.txt"
+        BENCHMARKS + "/{experiment}/kallisto_sr/counts.txt"
     run:
         import pandas as pd
         import os
@@ -85,9 +85,9 @@ rule kallisto_sr_transcriptome_stats:
         structural_category=os.path.join(config["output_dir"], "kallisto_sr","NOIseq",
                                           "{experiment}_structural_category.tsv")
     log:
-        LOGS + "/kallisto_sr/{experiment}_transcriptome_stats.log"
+        LOGS + "/{experiment}/kallisto_sr/transcriptome_stats.log"
     benchmark:
-        BENCHMARKS + "/kallisto_sr/{experiment}_transcriptome_stats.txt"
+        BENCHMARKS + "/{experiment}/kallisto_sr/transcriptome_stats.txt"
     conda:
         ENVS + "/NOIseq.yaml"
     threads: 1
@@ -109,8 +109,8 @@ rule kallisto_transcript_to_gene_sr:
         ENVS + "/gffread.yaml"
     threads: 1
     log:
-        LOGS + "/kallisto_sr/{experiment}_t2g.log"
+        LOGS + "/{experiment}/kallisto_sr/t2g.log"
     benchmark:
-        BENCHMARKS + "/kallisto_sr/{experiment}_t2g.txt"
+        BENCHMARKS + "/{experiment}/kallisto_sr/t2g.txt"
     shell:
         "ln -s -r {input.t2g} {output.t2g} > {log} 2>&1"

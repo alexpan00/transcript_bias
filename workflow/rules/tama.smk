@@ -28,9 +28,9 @@ rule tama_merge:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/tama/{experiment}/{pipeline}/tama_merge.log"
+        LOGS + "/{experiment}/tama/{pipeline}/tama_merge.log"
     benchmark:
-        BENCHMARKS + "/tama/{experiment}/{pipeline}/tama_merge.txt"
+        BENCHMARKS + "/{experiment}/tama/{pipeline}/tama_merge.txt"
     params:
         prefix=os.path.join(config["output_dir"], "{pipeline}","tama", "{experiment}", "merged"),
         options="-m 0 -d merge_dup -a 50 -z 50"
@@ -51,9 +51,9 @@ rule tama_merge_fasta:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/tama/{experiment}/{pipeline}/tama_merge_fasta.log"
+        LOGS + "/{experiment}/tama/{pipeline}/tama_merge_fasta.log"
     benchmark:
-        BENCHMARKS + "/tama/{experiment}/{pipeline}/tama_merge_fasta.txt"
+        BENCHMARKS + "/{experiment}/tama/{pipeline}/tama_merge_fasta.txt"
     shell:
         "gffread -w {output} -g {input.reference_fasta} {input.bed} > {log} 2>&1"
 
@@ -70,9 +70,9 @@ rule tama_transcriptome_stats:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/tama/{experiment}/{pipeline}/tama_merge_transcriptome_stats.log"
+        LOGS + "/{experiment}/tama/{pipeline}/tama_merge_transcriptome_stats.log"
     benchmark:
-        BENCHMARKS + "/tama/{experiment}/{pipeline}/tama_merge_transcriptome_stats.txt"
+        BENCHMARKS + "/{experiment}/tama/{pipeline}/tama_merge_transcriptome_stats.txt"
     shell:
         "(seqkit fx2tab -i -n -l -g -H {input.fasta} | cut -f2 -d';') > {output} 2> {log}"
 
@@ -91,9 +91,9 @@ rule tama_merge_counts:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/tama/{experiment}/{pipeline}/tama_merge_counts.log"
+        LOGS + "/{experiment}/tama/{pipeline}/tama_merge_counts.log"
     benchmark:
-        BENCHMARKS + "/tama/{experiment}/{pipeline}/tama_merge_counts.txt"
+        BENCHMARKS + "/{experiment}/tama/{pipeline}/tama_merge_counts.txt"
     shell:
         "Rscript {input.merge_script} {input.counts_manifest} {input.tama_file} {output} > {log} 2>&1"
 
@@ -112,9 +112,9 @@ rule tama_filter_bed:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/tama/{experiment}/{pipeline}/tama_filter_bed.log"
+        LOGS + "/{experiment}/tama/{pipeline}/tama_filter_bed.log"
     benchmark:
-        BENCHMARKS + "/tama/{experiment}/{pipeline}/tama_filter_bed.txt"
+        BENCHMARKS + "/{experiment}/tama/{pipeline}/tama_filter_bed.txt"
     run:
         import pandas as pd
         df = pd.read_csv(input.counts, sep="\t", header=0, index_col=0)
@@ -143,9 +143,9 @@ rule tama_merge_gtf:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/tama/{experiment}/{pipeline}/tama_merge_gtf.log"
+        LOGS + "/{experiment}/tama/{pipeline}/tama_merge_gtf.log"
     benchmark:
-        BENCHMARKS + "/tama/{experiment}/{pipeline}/tama_merge_gtf.txt"
+        BENCHMARKS + "/{experiment}/tama/{pipeline}/tama_merge_gtf.txt"
     shell:
         "python {input.bed2gtf} {input.bed} {output.gtf} > {log} 2>&1"
 
@@ -168,9 +168,9 @@ rule sqanti3_merge:
         slurm_extra=sqanti_queue,
         runtime=sqanti_time
     log:
-        LOGS + "/tama/{experiment}/{pipeline}/sqanti3_merge.log"
+        LOGS + "/{experiment}/tama/{pipeline}/sqanti3_merge.log"
     benchmark:
-        BENCHMARKS + "/tama/{experiment}/{pipeline}/sqanti3_merge.txt"
+        BENCHMARKS + "/{experiment}/tama/{pipeline}/sqanti3_merge.txt"
     shell:
         '''
         python3 {input.sqanti3_script} {input.gtf} {input.reference_annotation} \
@@ -199,9 +199,9 @@ rule assign_reference:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/tama/{experiment}/{pipeline}/assign_reference.log"
+        LOGS + "/{experiment}/tama/{pipeline}/assign_reference.log"
     benchmark:
-        BENCHMARKS + "/tama/{experiment}/{pipeline}/assign_reference.txt"
+        BENCHMARKS + "/{experiment}/tama/{pipeline}/assign_reference.txt"
     params:
         out_dir=os.path.join(config["output_dir"], "{pipeline}","NOIseq", "{experiment}"),
     shell:

@@ -15,9 +15,9 @@ rule long_read_gene_level_expression_ratio_counts:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{tool}/{experiment}/ratio_counts_gene_level_expression.log"
+        LOGS + "/{experiment}/{tool}/ratio_counts_gene_level_expression.log"
     benchmark:
-        BENCHMARKS + "/{tool}/{experiment}/ratio_counts_gene_level_expression.txt"
+        BENCHMARKS + "/{experiment}/{tool}/ratio_counts_gene_level_expression.txt"
     params:
         output_prefix=os.path.join(config["output_dir"], "{tool}", "NOIseq", "ratio_counts", "{experiment}_gene_level"),
         post_filtering=config.get("post_filtering", 0),
@@ -43,9 +43,9 @@ rule ratio_counts_normalization_sr:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/kallisto_sr/{experiment}_ratio_counts_normalization.log"
+        LOGS + "/{experiment}/kallisto_sr/ratio_counts_normalization.log"
     benchmark:
-        BENCHMARKS + "/kallisto_sr/{experiment}_ratio_counts_normalization.txt"
+        BENCHMARKS + "/{experiment}/kallisto_sr/ratio_counts_normalization.txt"
     params:
         output_prefix=os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "ratio_counts", "{experiment}"),
         post_filtering=config.get("post_filtering", 0),
@@ -75,9 +75,9 @@ rule shortread_gene_level_expression_ratio_counts:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/kallisto_sr/{experiment}_ratio_counts_gene_level_expression.log"
+        LOGS + "/{experiment}/kallisto_sr/ratio_counts_gene_level_expression.log"
     benchmark:
-        BENCHMARKS + "/kallisto_sr/{experiment}_ratio_counts_gene_level_expression.txt"
+        BENCHMARKS + "/{experiment}/kallisto_sr/ratio_counts_gene_level_expression.txt"
     params:
         output_prefix=os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "ratio_counts", "{experiment}_gene_level"),
         post_filtering=config.get("post_filtering", 0),
@@ -104,9 +104,9 @@ rule SIRV_expression_ratio_counts:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/SIRVs/NOIseq/{experiment}_ratio_counts.log"
+        LOGS + "/{experiment}/SIRVs/ratio_counts.log"
     benchmark:
-        BENCHMARKS + "/SIRVs/NOIseq/{experiment}_ratio_counts.txt"
+        BENCHMARKS + "/{experiment}/SIRVs/ratio_counts.txt"
     params:
         output_prefix=os.path.join(config["output_dir"], "SIRVs", "NOIseq", "ratio_counts", "{experiment}_SIRV"),
         post_filtering=0,
@@ -131,9 +131,9 @@ rule ERCC_expression_ratio_counts:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/ERCC/NOIseq/{experiment}_ratio_counts.log"
+        LOGS + "/{experiment}/ERCC/ratio_counts.log"
     benchmark:
-        BENCHMARKS + "/ERCC/NOIseq/{experiment}_ratio_counts.txt"
+        BENCHMARKS + "/{experiment}/ERCC/ratio_counts.txt"
     params:
         output_prefix=os.path.join(config["output_dir"], "SIRVs", "NOIseq", "ratio_counts", "{experiment}_ERCC"),
         post_filtering=0,
@@ -181,9 +181,9 @@ rule NOIseq_sr_ratio_counts_analysis:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/kallisto_sr/{experiment}_ratio_counts_NOIseq.log"
+        LOGS + "/{experiment}/kallisto_sr/ratio_counts_NOIseq.log"
     benchmark:
-        BENCHMARKS + "/kallisto_sr/{experiment}_ratio_counts_NOIseq.txt"
+        BENCHMARKS + "/{experiment}/kallisto_sr/ratio_counts_NOIseq.txt"
     params:
         output_prefix=os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "ratio_counts", "{experiment}"),
         factors=",".join(config.get("report_factors", [])),

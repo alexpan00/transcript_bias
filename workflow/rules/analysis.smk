@@ -127,9 +127,9 @@ rule NOIseq:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{tool}/{experiment}_{normalization_method}_NOIseq.log"
+        LOGS + "/{experiment}/{tool}/{normalization_method}_NOIseq.log"
     benchmark:
-        BENCHMARKS + "/{tool}/{experiment}_{normalization_method}_NOIseq.txt"
+        BENCHMARKS + "/{experiment}/{tool}/{normalization_method}_NOIseq.txt"
     params:
         output_prefix=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", "{experiment}"),
         factors=",".join(config.get("report_factors", [])),
@@ -158,9 +158,9 @@ rule NOIseq_object:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{tool}/{experiment}_NOIseq_object.log"
+        LOGS + "/{experiment}/{tool}/NOIseq_object.log"
     benchmark:
-        BENCHMARKS + "/{tool}/{experiment}_NOIseq_object.txt"
+        BENCHMARKS + "/{experiment}/{tool}/NOIseq_object.txt"
     params:
         output_prefix=os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{experiment}"),
         factors=",".join(config.get("report_factors", [])),
@@ -191,9 +191,9 @@ rule NOIseq_object_sr:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/kallisto_sr/{experiment}_NOIseq_object.log"
+        LOGS + "/{experiment}/kallisto_sr/NOIseq_object.log"
     benchmark:
-        BENCHMARKS + "/kallisto_sr/{experiment}_NOIseq_object.txt"
+        BENCHMARKS + "/{experiment}/kallisto_sr/NOIseq_object.txt"
     params:
         output_prefix=os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "{experiment}"),
         factors=",".join(config.get("report_factors", [])),
@@ -241,9 +241,9 @@ rule NOIseq_sr:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/kallisto_sr/{experiment}_NOIseq.log"
+        LOGS + "/{experiment}/kallisto_sr/NOIseq.log"
     benchmark:
-        BENCHMARKS + "/kallisto_sr/{experiment}_NOIseq.txt"
+        BENCHMARKS + "/{experiment}/kallisto_sr/NOIseq.txt"
     params:
         output_prefix=os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "TPM", "{experiment}"),
         factors=",".join(config.get("report_factors", [])),
@@ -771,9 +771,9 @@ rule isoforms_per_gene:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/ideas/{tool}/{experiment}_long_vs_short_sirv.log"
+        LOGS + "/{experiment}/{tool}/long_vs_short_sirv.log"
     benchmark:
-        BENCHMARKS + "/ideas/{tool}/{experiment}_long_vs_short_sirv.txt"
+        BENCHMARKS + "/{experiment}/{tool}/long_vs_short_sirv.txt"
     params:
         output_prefix=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{experiment}"),
     shell:
@@ -823,9 +823,9 @@ rule replicability:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/replicability/{tool}/{experiment}_long_vs_short_sirv.log"
+        LOGS + "/{experiment}/{tool}/long_vs_short_sirv.log"
     benchmark:
-        BENCHMARKS + "/replicability/{tool}/{experiment}_long_vs_short_sirv.txt"
+        BENCHMARKS + "/{experiment}/{tool}/long_vs_short_sirv.txt"
     params:
         output_prefix=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{experiment}"),
     shell:
@@ -880,9 +880,9 @@ rule normalization:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{tool}/{experiment}_{norm_method}_normalization.log"
+        LOGS + "/{experiment}/{tool}/{norm_method}_normalization.log"
     benchmark:
-        BENCHMARKS + "/{tool}/{experiment}_{norm_method}_normalization.txt"
+        BENCHMARKS + "/{experiment}/{tool}/{norm_method}_normalization.txt"
     params:
         output_prefix=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{experiment}"),
         post_filtering=config.get("post_filtering", 0),
@@ -910,9 +910,9 @@ rule short_read_gene_level_tpm:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/kallisto_sr/{experiment}_TPM_normalization.log"
+        LOGS + "/{experiment}/kallisto_sr/TPM_normalization.log"
     benchmark:
-        BENCHMARKS + "/kallisto_sr/{experiment}_TPM_normalization.txt"
+        BENCHMARKS + "/{experiment}/kallisto_sr/TPM_normalization.txt"
     params:
         output_prefix=os.path.join(config["output_dir"], "kallisto_sr", "NOIseq", "TPM", "{experiment}"),
         post_filtering=config.get("post_filtering", 0),
@@ -1003,9 +1003,9 @@ rule generate_synthetic_mixtures:
     conda:
         ENVS + "/NOIseq.yaml"
     log:
-        LOGS + "/mixture_generation/{tool}/{experiment}_mixture_generation.log"
+        LOGS + "/{experiment}/{tool}/mixture_generation.log"
     benchmark:
-        BENCHMARKS + "/mixture_generation/{tool}/{experiment}_mixture_generation.txt"
+        BENCHMARKS + "/{experiment}/{tool}/mixture_generation.txt"
     resources:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
@@ -1028,9 +1028,9 @@ rule normalize_synthetic_mixtures:
         output_prefix=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", "{experiment}_synthetic"),
         post_filtering=config.get("post_filtering", 0),
     log:
-        LOGS + "/mixture_normalization/{tool}/{normalization_method}/{experiment}_mixture_normalization.log"
+        LOGS + "/{experiment}/{tool}/{normalization_method}/mixture_normalization.log"
     benchmark:
-        BENCHMARKS + "/mixture_normalization/{tool}/{normalization_method}/{experiment}_mixture_normalization.txt"
+        BENCHMARKS + "/{experiment}/{tool}/{normalization_method}/mixture_normalization.txt"
     resources:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
@@ -1068,9 +1068,9 @@ rule mixture_correlation:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/mixture_correlation/{tool}/{normalization_method}/{experiment}_mixture_correlation.log"
+        LOGS + "/{experiment}/{tool}/{normalization_method}/mixture_correlation.log"
     benchmark:
-        BENCHMARKS + "/mixture_correlation/{tool}/{normalization_method}/{experiment}_mixture_correlation.txt"
+        BENCHMARKS + "/{experiment}/{tool}/{normalization_method}/mixture_correlation.txt"
     params:
         output_prefix=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", "{experiment}"),
     shell:
