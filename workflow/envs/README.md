@@ -12,7 +12,7 @@ This directory contains the isolated **Conda environment definitions** (`*.yaml`
 | **Bambu** | `3.12.1` | `envs/bambu.yaml` | Long-read transcript reconstruction & quantification |
 | **IsoQuant** | `3.6.0` | `envs/isoquant.yaml` | Reference-based transcript identification & quantification |
 | **Oarfish** | `0.7.0` | `envs/oarfish.yaml` | Probabilistic long-read transcript quantification |
-| **FLAIR** | `2.0.0` | `envs/flair3.yaml` | Full-length transcript isoform identification |
+| **FLAIR** | `3.0.0` | `envs/flair3.yaml` | Full-length transcript isoform identification |
 | **SQANTI3** | `5.3.0` | `envs/SQANTI3.yml` | Quality control & structural categorization of transcript models |
 | **NOISeq** | `2.46.0` | `envs/NOIseq.yaml` | Normalization, count matrix construction, and differential analysis |
 | **minimap2** | `2.28` | `envs/align.yaml` | Long-read spliced alignment to reference genome |
