@@ -119,15 +119,6 @@ for (sample in lr_vs_sr$Samples){
 
   if (has_length) {
     sample_df$Length <- transcript_lengths[sample_df$Transcript]
-    # valid_lengths <- sample_df$Length[!is.na(sample_df$Length)]
-
-    # if (length(valid_lengths) > 0L) {
-    #   length_breaks <- unique(as.numeric(quantile(valid_lengths, probs = seq(0, 1, 0.25), na.rm = TRUE)))
-    # } else {
-    #   length_breaks <- numeric()
-    # }
-
-    # sample_df$LengthQuantile <- assign_length_quantile(sample_df$Length, length_breaks)
     sample_df$LengthQuantile <- assign_length_group(sample_df$Length)
   }
 

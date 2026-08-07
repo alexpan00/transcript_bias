@@ -210,18 +210,6 @@ annotation_colors <- list(
   Normalization = norm_colors
 )
 
-# p <- pheatmap(cormat,
-#          cluster_cols = FALSE,
-#          cluster_rows = FALSE,
-#          show_colnames = FALSE,
-#          show_rownames = T,
-#          annotation_col = annot,
-#          annotation_colors = annotation_colors,
-#          scale = "none",
-#          display_numbers = TRUE,
-#          fontsize = 8
-# )
-
 # ============================================================================
 # ALTERNATIVE: ggplot2 version with geom_tile and shapes (ranking overlay)
 # ============================================================================

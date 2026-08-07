@@ -13,10 +13,6 @@ quantification_fofn <- readLines(quantification_fofn)
 tama_merge_table <- read.table(tama_merge_file, header = FALSE, sep = "\t")
 
 # Format TAMA merge dataframe
-# remove_strings <- c("_talon")
-# tama_merge_table_cleaned <- tama_merge_table
-# tama_merge_table_cleaned[, 4] <- stringr::str_replace_all(tama_merge_table[, 4], 
-#                                                           paste(remove_strings, collapse = "|"), "")
 
 # Get sample IDs and sort them by length (descending) to match the longest one first
 all_sample_ids <- sapply(strsplit(quantification_fofn, "\t"), `[`, 1)
