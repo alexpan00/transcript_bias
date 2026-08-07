@@ -12,9 +12,9 @@ rule transcriptome_fasta:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        f"{LOGS}/oarfish/{config["experiment"]}_transcriptome_fasta.log"
+        LOGS + "/oarfish/" + config["experiment"] + "_transcriptome_fasta.log"
     benchmark:
-        f"{BENCHMARKS}/oarfish/{config["experiment"]}_transcriptome_fasta.txt"
+        BENCHMARKS + "/oarfish/" + config["experiment"] + "_transcriptome_fasta.txt"
     shell:
         "gffread -w {output} -g {input.genome} {input.annotation} > {log} 2>&1"
 
@@ -31,9 +31,9 @@ rule transcriptome_stats:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        f"{LOGS}/oarfish/{config["experiment"]}_transcriptome_stats.log"
+        LOGS + "/oarfish/" + config["experiment"] + "_transcriptome_stats.log"
     benchmark:
-        f"{BENCHMARKS}/oarfish/{config["experiment"]}_transcriptome_stats.txt"
+        BENCHMARKS + "/oarfish/" + config["experiment"] + "_transcriptome_stats.txt"
     shell:
         "seqkit fx2tab -i -n -l -g -H {input.fasta} > {output} 2> {log}"
 
@@ -50,9 +50,9 @@ rule index_trasncriptome:
         mem_mb=index_memory,
         slurm_extra="'--qos=short'"
     log:
-        f"{LOGS}/oarfish/{config["experiment"]}_index_transcriptome.log"
+        LOGS + "/oarfish/" + config["experiment"] + "_index_transcriptome.log"
     benchmark:
-        f"{BENCHMARKS}/oarfish/{config["experiment"]}_index_transcriptome.txt"
+        BENCHMARKS + "/oarfish/" + config["experiment"] + "_index_transcriptome.txt"
     params:
         preset=f'{"map-hifi" if config["data_type"] == "pacbio" else "map-ont"}'
     shell:

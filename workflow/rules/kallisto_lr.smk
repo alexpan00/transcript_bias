@@ -14,9 +14,9 @@ rule kallisto_index:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        f"{LOGS}/kallisto/{config["experiment"]}/index.log"
+        LOGS + "/kallisto/" + config["experiment"] + "/index.log"
     benchmark:
-        f"{BENCHMARKS}/kallisto/{config["experiment"]}/index.txt"
+        BENCHMARKS + "/kallisto/" + config["experiment"] + "/index.txt"
     params:
         tmp_dir=os.path.join(config["output_dir"], "kallisto", "01_index", "tmp") 
     shell:
@@ -40,9 +40,9 @@ rule kallisto_bus:
         mem_mb=7000,
         slurm_extra="'--qos=short'"
     log:
-        f"{LOGS}/kallisto/{config["experiment"]}/bus.log"
+        LOGS + "/kallisto/" + config["experiment"] + "/bus.log"
     benchmark:
-        f"{BENCHMARKS}/kallisto/{config["experiment"]}/bus.txt"
+        BENCHMARKS + "/kallisto/" + config["experiment"] + "/bus.txt"
     params:
         "--long --threshold=0.8 -x bulk"
     shell:
@@ -61,9 +61,9 @@ rule bus_sort:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        f"{LOGS}/kallisto/{config["experiment"]}/bus_sort.log"
+        LOGS + "/kallisto/" + config["experiment"] + "/bus_sort.log"
     benchmark:
-        f"{BENCHMARKS}/kallisto/{config["experiment"]}/bus_sort.txt"
+        BENCHMARKS + "/kallisto/" + config["experiment"] + "/bus_sort.txt"
     shell:
         "bustools sort -t {threads} -o {output.output_bus} {input.bus} > {log} 2>&1"
 
@@ -86,9 +86,9 @@ rule bus_count:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        f"{LOGS}/kallisto/{config["experiment"]}/bus_count.log"
+        LOGS + "/kallisto/" + config["experiment"] + "/bus_count.log"
     benchmark:
-        f"{BENCHMARKS}/kallisto/{config["experiment"]}/bus_count.txt"
+        BENCHMARKS + "/kallisto/" + config["experiment"] + "/bus_count.txt"
     params:
         "--cm -m"
     shell:
@@ -114,9 +114,9 @@ rule kallisto_tcc:
         mem_mb=generic_memory,
         slurm_extra="'--qos=short'"
     log:
-        f"{LOGS}/kallisto/{config["experiment"]}/tcc.log"
+        LOGS + "/kallisto/" + config["experiment"] + "/tcc.log"
     benchmark:
-        f"{BENCHMARKS}/kallisto/{config["experiment"]}/tcc.txt"
+        BENCHMARKS + "/kallisto/" + config["experiment"] + "/tcc.txt"
     params:
         lambda wildcards, threads: f'--long -P {"PacBio" if config["data_type"] == "pacbio" else "ONT"}' # TODO should be an input of th pipeline
     shell:       

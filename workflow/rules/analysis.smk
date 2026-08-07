@@ -982,9 +982,9 @@ rule summary_normalization_length:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{experiment}/normalization_summary_length.log"
+        LOGS + "/summary/{experiment}/normalization_summary_length.log"
     benchmark:
-        BENCHMARKS + "/{experiment}_normalization_summary_length.txt"
+        BENCHMARKS + "/summary/{experiment}_normalization_summary_length.txt"
     params:
         noiseq_objs=",".join(expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{{experiment}}_NOIseq.rds"), norm_method = normalization_methods, tool=user_tools)),
     shell:
@@ -1101,9 +1101,9 @@ rule summary_normalization_mixtures:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{experiment}/normalization_summary_mixtures.log"
+        LOGS + "/summary/{experiment}/normalization_summary_mixtures.log"
     benchmark:
-        BENCHMARKS + "/{experiment}_normalization_summary_mixtures.txt"
+        BENCHMARKS + "/summary/{experiment}_normalization_summary_mixtures.txt"
     params:
         noiseq_objs=",".join(expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{{experiment}}_mixture_summary.rds"), norm_method = normalization_methods, tool=user_tools)),
     shell:
@@ -1143,9 +1143,9 @@ rule summary_normalization_sirv:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{experiment}/normalization_summary_sirvs.log"
+        LOGS + "/summary/{experiment}/normalization_summary_sirvs.log"
     benchmark:
-        BENCHMARKS + "/{experiment}_normalization_summary_sirvs.txt"
+        BENCHMARKS + "/summary/{experiment}_normalization_summary_sirvs.txt"
     params:
         noiseq_objs=",".join(expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{{experiment}}_sirv_summary.rds"), norm_method = normalization_methods, tool=user_tools)),
     shell:
@@ -1167,7 +1167,7 @@ rule summary_sensitivity_sirv:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{experiment}/sensitivity_summary_sirv.log"
+        LOGS + "/summary/{experiment}/sensitivity_summary_sirv.log"
     benchmark:
         BENCHMARKS + "/{experiment}/sensitivity_summary_sirv.txt"
     params:
@@ -1209,9 +1209,9 @@ rule summary_normalization_ercc:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{experiment}/normalization_summary_ercc.log"
+        LOGS + "/summary/{experiment}/normalization_summary_ercc.log"
     benchmark:
-        BENCHMARKS + "/{experiment}_normalization_summary_ercc.txt"
+        BENCHMARKS + "/summary/{experiment}_normalization_summary_ercc.txt"
     params:
         noiseq_objs=",".join(expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{{experiment}}_ercc_summary.rds"), norm_method = normalization_methods, tool=user_tools)),
     shell:
@@ -1233,7 +1233,7 @@ rule summary_sensitivity_ercc:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{experiment}/sensitivity_summary_ercc.log"
+        LOGS + "/summary/{experiment}/sensitivity_summary_ercc.log"
     benchmark:
         BENCHMARKS + "/{experiment}/sensitivity_summary_ercc.txt"
     params:
@@ -1267,9 +1267,9 @@ rule summary_normalization_sr:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{experiment}/normalization_summary_sr.log"
+        LOGS + "/summary/{experiment}/normalization_summary_sr.log"
     benchmark:
-        BENCHMARKS + "/{experiment}_normalization_summary_sr.txt"
+        BENCHMARKS + "/summary/{experiment}_normalization_summary_sr.txt"
     params:
         noiseq_objs=",".join(expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{{experiment}}_sr_summary.rds"), norm_method = normalization_methods, tool=user_tools)),
         output_prefix=os.path.join(config["output_dir"], "{experiment}"),
@@ -1302,9 +1302,9 @@ rule summary_normalization_tusco:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{experiment}/normalization_summary_tusco.log"
+        LOGS + "/summary/{experiment}/normalization_summary_tusco.log"
     benchmark:
-        BENCHMARKS + "/{experiment}_normalization_summary_tusco.txt"
+        BENCHMARKS + "/summary/{experiment}_normalization_summary_tusco.txt"
     params:
         noiseq_objs=",".join(expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{{experiment}}_tusco_summary.rds"), norm_method = normalization_methods, tool=user_tools)),
         output_prefix=os.path.join(config["output_dir"], "{experiment}_tusco"),
@@ -1337,9 +1337,9 @@ rule summary_normalization_sr_gene_level:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{experiment}/normalization_summary_sr_gene_level.log"
+        LOGS + "/summary/{experiment}/normalization_summary_sr_gene_level.log"
     benchmark:
-        BENCHMARKS + "/{experiment}_normalization_summary_sr_gene_level.txt"
+        BENCHMARKS + "/summary/{experiment}_normalization_summary_sr_gene_level.txt"
     params:
         noiseq_objs=",".join(expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{{experiment}}_gene_level_sr_summary.rds"), norm_method = normalization_methods, tool=user_tools)),
         output_prefix=os.path.join(config["output_dir"], "{experiment}_gene_level"),
@@ -1379,9 +1379,9 @@ rule summary_combined_correlation:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{experiment}/summary_combined_correlation.log"
+        LOGS + "/summary/{experiment}/summary_combined_correlation.log"
     benchmark:
-        BENCHMARKS + "/{experiment}_summary_combined_correlation.txt"
+        BENCHMARKS + "/summary/{experiment}_summary_combined_correlation.txt"
     params:
         mixture_objs=lambda wildcards, input: input.mixture_objs if config.get("mixture_definition", False) else "none",
         sirv_objs=lambda wildcards, input: input.sirv_objs if config.get("sirv_analysis", False) else "none",
@@ -1418,9 +1418,9 @@ rule summary_sqanti:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{experiment}/summary_sqanti_combined.log"
+        LOGS + "/summary/{experiment}/summary_sqanti_combined.log"
     benchmark:
-        BENCHMARKS + "/{experiment}_summary_sqanti_combined.txt"
+        BENCHMARKS + "/summary/{experiment}_summary_sqanti_combined.txt"
     params:
         sqanti_csvs=",".join(expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{{experiment}}_SQ_counts_per_sample.csv"), tool=user_tools)),
     shell:
@@ -1445,9 +1445,9 @@ rule summary_sqanti_global:
         mem_mb=NOISeq_memory,
         slurm_extra="'--qos=short'"
     log:
-        LOGS + "/{experiment}/summary_sqanti_global.log"
+        LOGS + "/summary/{experiment}/summary_sqanti_global.log"
     benchmark:
-        BENCHMARKS + "/{experiment}_summary_sqanti_global.txt"
+        BENCHMARKS + "/summary/{experiment}_summary_sqanti_global.txt"
     params:
         sqanti_csvs=",".join(expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{{experiment}}_SQ_counts_global.csv"), tool=user_tools)),
         categories_prefiltered=",".join(expand(os.path.join(config["output_dir"], "{tool}", "NOIseq","{{experiment}}_structural_category.tsv"), tool=user_tools)),
