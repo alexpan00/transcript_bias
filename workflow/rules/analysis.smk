@@ -358,17 +358,14 @@ def get_short_read_gene_level_input(wildcards):
 
 def get_long_read_gene_level_input(wildcards):
     suffix = "gene_level_NOIseq.rds"
-    if wildcards.normalization_method == "ratio_counts":
-        folder = "ratio_counts"
-    else:
-        folder = "TPM"
+    if wildcards.normalization_method != "ratio_counts":
         suffix = "gene_level_expression.rds"
         
     return os.path.join(
         config["output_dir"], 
         wildcards.tool,
         "NOIseq", 
-        folder, 
+        wildcards.normalization_method, 
         f"{wildcards.experiment}_{suffix}"
     )
 
