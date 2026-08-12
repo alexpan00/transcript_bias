@@ -38,7 +38,7 @@ report:
 	@echo "Report generated at workflow/$(REPORT)"
 
 clean:
-	rm -rf workflow/logs/* workflow/benchmarks/* workflow/gurobi.log gurobi.log
+	rm -rf workflow/logs/* workflow/benchmarks/*
 
 clean-test:
 	rm -rf workflow/results_test/
