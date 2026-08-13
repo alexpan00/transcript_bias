@@ -89,3 +89,29 @@ rule prepare_file_to_sample:
         df = metadata_extended[["sample", "bam_basename", "fastq_basename"]]
         df.to_csv(output.metadata_extended, sep="\t", index=False)
 
+
+# This rule copies the workflow configuration, metadata, and factors into a hidden .run_metadata folder in output_dir
+rule save_run_metadata:
+    input:
+        metadata=config["metadata"],
+        factors=config["factors"] if config.get("factors") else []
+    output:
+        meta_dir=directory(os.path.join(config["output_dir"], ".run_metadata")),
+        metadata_copy=os.path.join(config["output_dir"], ".run_metadata", "metadata.csv"),
+        config_copy=os.path.join(config["output_dir"], ".run_metadata", "config.yml")
+    params:
+        factors=config.get("factors", "")
+    run:
+        import shutil
+        import yaml
+        
+        os.makedirs(output.meta_dir, exist_ok=True)
+        shutil.copy(input.metadata, output.metadata_copy)
+        
+        if params.factors and os.path.exists(params.factors):
+            shutil.copy(params.factors, os.path.join(output.meta_dir, "factors.csv"))
+            
+        with open(output.config_copy, "w") as f:
+            yaml.dump(dict(config), f, default_flow_style=False)
+
+

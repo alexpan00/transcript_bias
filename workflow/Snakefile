@@ -31,7 +31,7 @@ localrules:
     flair_counts, bambu_counts, isoquant_counts, 
     oarfish_transcriptome_stats, kallisto_transcriptome_stats, 
     kallisto_sr_transcriptome_stats, prepare_file_to_sample, kallisto_transcript_to_gene,
-    kallisto_transcript_to_gene_sr, oarfish_transcript_to_gene
+    kallisto_transcript_to_gene_sr, oarfish_transcript_to_gene, save_run_metadata
 
 # Input data
 CAGE_FILE = config.get("cage", "")
@@ -136,6 +136,8 @@ rule all:
         # UJC results
         expand(os.path.join(config["output_dir"], "{tool}", "NOIseq", f"{config['experiment']}_UJC.tsv"), tool=user_tools),
         os.path.join(config["output_dir"], f"{config['experiment']}_UJC_upset.png"),
-        os.path.join(config["output_dir"], f"{config['experiment']}_UJC_summary.tsv")
+        os.path.join(config["output_dir"], f"{config['experiment']}_UJC_summary.tsv"),
+        # Run metadata
+        os.path.join(config["output_dir"], ".run_metadata", "config.yml")
 
 
