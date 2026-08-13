@@ -1,81 +1,47 @@
 # ==============================================================================
 # General Settings
 # ==============================================================================
-experiment: "my_experiment"   # Short label for your experiment (used in output filenames)
+experiment: "test_run"        # Label for experiment (used in output filenames)
 data_type: "pacbio"           # Long-read platform: "pacbio" or "nanopore"
 output_dir: "results"         # Output directory (relative to the workflow/ directory)
 
 # ==============================================================================
 # Input Data
 # ==============================================================================
-# Path to the sample metadata CSV (see README for required columns)
-metadata: "metadata.csv"
-# Path to the per-sample factors CSV (used for stratifying plots)
-factors: "factors.csv"
+metadata: "test_data/test_metadata.csv"
+factors: "test_data/test_factors.csv"
 
 # Short-read comparison (optional)
 sr_analysis: false
-# sr_fastq: "path/to/short_read_manifest.tsv"   # Uncomment and fill if sr_analysis: true
 
 # ==============================================================================
 # Reference Files
 # ==============================================================================
-reference_genome:     "path/to/genome.fa"
-reference_annotation: "path/to/annotation.gtf"
-
-# Optional: CAGE peaks file (BED format) for 5' end validation
-# cage: "path/to/cage_peaks.bed"
-
-# Optional: PolyA sites file (BED format) for 3' end validation
-# tts: "path/to/polyA_sites.bed"
+reference_genome: "test_data/tiny_genome.fa"
+reference_annotation: "test_data/tiny_annotation.gtf"
 
 # ==============================================================================
 # Tools & Analysis
 # ==============================================================================
-# List of tools to run. Available options:
-#   kallisto, bambu, flair, isoquant, oarfish
 tools: ["kallisto", "bambu"]
 
-# Path to the SQANTI3 installation directory (auto-cloned by the workflow)
 sqanti_dir: "SQANTI3"
-
-# Normalization methods to apply.
-# Available options: TMM, CPM, TPM, ratio_counts, EDA, cqn
-normalization_methods: ["TMM", "CPM", "TPM"]
-
-# Minimum count per condition filter:
-# Transcripts that do not have at least this many counts in all samples of
-# at least one condition will be removed before analysis.
+normalization_methods: ["CPM", "TPM"]
 min_count_condition: 0
 
 # ==============================================================================
 # SIRV Spike-in Controls
 # ==============================================================================
-sirv_analysis: false   # Set to true if your experiment contains SIRV spike-ins
-# sirvs_info: "sirvs_info.csv"      # CSV with SIRV transcript IDs, lengths, and expected ratios
-# sirv_mixes: "config/sirv_mixes.json"  # JSON with per-mix SIRV concentration ratios
+sirv_analysis: false
 
 # ==============================================================================
-# ERCC Spike-in Controls (optional)
+# Optional Analyses
 # ==============================================================================
-# ERCC_counts: "path/to/ercc_counts.tsv"  # Pre-computed ERCC count matrix
-
-# ==============================================================================
-# Optional Analyses (set to true to enable)
-# ==============================================================================
-iso_per_gene_analysis: false    # Isoforms-per-gene statistics
-replicability_analysis: false   # Cross-replicate reproducibility plots
-coverage_analysis: false        # Per-sample read coverage plots
-
-# Optional: synthetic mixture validation
-# mixture_definition: "mixture_definition.csv"  # CSV defining mixture proportions
-
-# Optional: TUSCO list for long-vs-short comparison
-# tusco_list: "path/to/tusco_list.txt"
+iso_per_gene_analysis: false
+replicability_analysis: false
+coverage_analysis: false
 
 # ==============================================================================
 # Reporting
 # ==============================================================================
-# Metadata columns to use for stratifying plots and reports.
-# These must match column names in factors.csv.
 report_factors: ["Tissue", "Pool"]
