@@ -157,7 +157,6 @@ A comma-separated file with **one row per sample**.
 |---|---|
 | `fastq` | Absolute path to the FASTQ file |
 | `aligned` | Absolute path to the genome-aligned BAM file |
-| `flnc` | Absolute path to the FLNC BAM (can be the same as `aligned` for non-IsoSeq tools) |
 | `sample` | Unique sample identifier |
 | `condition` | Experimental condition label (groups samples for joint reconstruction) |
 
@@ -170,10 +169,10 @@ A comma-separated file with **one row per sample**.
 Example:
 
 ```csv
-fastq,aligned,flnc,sample,condition,SIRV
-/data/Brain_1.fastq,/data/Brain_1.bam,/data/Brain_1.bam,B31,brain,E0
-/data/Brain_2.fastq,/data/Brain_2.bam,/data/Brain_2.bam,B32,brain,E0
-/data/Kidney_1.fastq,/data/Kidney_1.bam,/data/Kidney_1.bam,K31,kidney,E1
+fastq,aligned,sample,condition,SIRV
+/data/Brain_1.fastq,/data/Brain_1.bam,B31,brain,E0
+/data/Brain_2.fastq,/data/Brain_2.bam,B32,brain,E0
+/data/Kidney_1.fastq,/data/Kidney_1.bam,K31,kidney,E1
 ```
 
 ### `factors.csv`
