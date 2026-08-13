@@ -7,6 +7,8 @@ __pycache__/
 # Log and benchmark directories
 logs/
 benchmarks/
+gurobi.log
+workflow/gurobi.log
 # Internal agent logs & temp plots
 .agents/
 *.pdf
