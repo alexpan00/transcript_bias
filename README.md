@@ -323,16 +323,25 @@ If you use this workflow in your research, please cite:
 
 > *[Your paper citation here]*
 
-Please also cite the individual tools you use in your analysis. Key references:
+Please also cite the underlying tools used in your benchmark analysis:
 
-- **kallisto** / **bustools**: Melsted et al., *Nature Biotechnology* (2021)
-- **bambu**: Chen et al., *Nature Methods* (2023)
-- **IsoQuant**: Prjibelski et al., *Nature Biotechnology* (2023)
-- **oarfish**: Zare Jousheghani & Patro, *Genome Biology* (2024)
-- **FLAIR**: Tang et al., *Nature Communications* (2020)
-- **SQANTI3**: Tardaguila et al., *Genome Research* (2018); Pardo-Palacios et al. (ongoing)
-- **TAMA**: Kuo et al., *Nature Methods* (2020)
-- **NOISeq**: Tarazona et al., *Nucleic Acids Research* (2015)
+- **kallisto**:
+  - Bray, N. L., Pimentel, H., Melsted, P., & Pachter, L. (2016). Near-optimal probabilistic RNA-seq quantification. *Nature Biotechnology*, 34(5), 525–527. https://doi.org/10.1038/NBT.3519
+  - Loving, R. K., Sullivan, D. K., Reese, F., Rebboah, E., Sakr, J., Rezaie, N., Liang, H. Y., Filimban, G., Kawauchi, S., Booeshaghi, A. S., Melsted, P., Oakes, C., Trout, D., Williams, B. A., MacGregor, G. R., Wold, B. J., Mortazavi, A., & Pachter, L. (2025). Long-read sequencing transcriptome quantification with lr-kallisto. *PLOS Computational Biology*, 21(12), e1013692. https://doi.org/10.1371/JOURNAL.PCBI.1013692
+- **bambu**:
+  - Chen, Y., Sim, A., Wan, Y. K., Yeo, K., Lee, J. J. X., Ling, M. H., Love, M. I., & Göke, J. (2023). Context-aware transcript quantification from long-read RNA-seq data with Bambu. *Nature Methods*, 20(8), 1187–1195. https://doi.org/10.1038/s41592-023-01908-w
+- **IsoQuant**:
+  - Prjibelski, A. D., Mikheenko, A., Joglekar, A., Smetanin, A., Jarroux, J., Lapidus, A. L., & Tilgner, H. U. (2023). Accurate isoform discovery with IsoQuant using long reads. *Nature Biotechnology*, 41(7), 915–918. https://doi.org/10.1038/s41587-022-01565-y
+- **oarfish**:
+  - Jousheghani, Z. Z., Singh, N. P., & Patro, R. (2025). Oarfish: enhanced probabilistic modeling leads to improved accuracy in long read transcriptome quantification. *Bioinformatics*, 41(Suppl 1), i304. https://doi.org/10.1093/BIOINFORMATICS/BTAF240
+- **FLAIR**:
+  - Tang, A. D., Soulette, C. M., van Baren, M. J., Hart, K., Hrabeta-Robinson, E., Wu, C. J., & Brooks, A. N. (2020). Full-length transcript characterization of SF3B1 mutation in chronic lymphocytic leukemia reveals downregulation of retained introns. *Nature Communications*, 11(1), 1–12. https://doi.org/10.1038/s41467-020-15171-6
+- **SQANTI3**:
+  - Pardo-Palacios, F. J., Arzalluz-Luque, A., Kondratova, L., Salguero, P., Mestre-Tomás, J., Amorín, R., Estevan-Morió, E., Liu, T., Nanni, A., McIntyre, L., Tseng, E., & Conesa, A. (2024). SQANTI3: curation of long-read transcriptomes for accurate identification of known and novel isoforms. *Nature Methods*, 21(5), 793–797. https://doi.org/10.1038/s41592-024-02229-2
+- **TAMA**:
+  - Kuo, R. I., Cheng, Y., Zhang, R., Brown, J. W. S., Smith, J., Archibald, A. L., & Burt, D. W. (2020). Illuminating the dark side of the human transcriptome with long read transcript sequencing. *BMC Genomics*, 21(1), 1–22. https://doi.org/10.1186/S12864-020-07123-7
+- **NOISeq**:
+  - Tarazona, S., Furió-Tarí, P., Turrà, D., di Pietro, A., Nueda, M. J., Ferrer, A., & Conesa, A. (2015). Data quality aware analysis of differential expression in RNA-seq with NOISeq R/Bioc package. *Nucleic Acids Research*, 43(21), e140. https://doi.org/10.1093/NAR/GKV711
 
 ---
 
