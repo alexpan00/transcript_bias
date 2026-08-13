@@ -56,12 +56,8 @@ for (i in 1:length(quantification_fofn)) {
     warning(paste("Quantification file has 0 rows:", file, "- skipping."))
     next
   }
-  if (ncol(quant_file) == 2) {
-    colnames(quant_file) <- c("pbid", sample_id)
-  } else {
-    colnames(quant_file)[1] <- "pbid"
-  }
 
+  colnames(quant_file)[1] <- "pbid"
   print("colnames of quant file")
   print(colnames(quant_file))
 
