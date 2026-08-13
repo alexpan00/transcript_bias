@@ -33,7 +33,10 @@ tama/
 *.Rhistory
 .RData
 
-# Common bioinformatics intermediate files
+# Common bioinformatics intermediate files (except test_data)
+!workflow/test_data/*.bam
+!workflow/test_data/*.bam.bai
+!workflow/test_data/*.fastq
 *.bam
 *.bam.bai
 *.fastq
