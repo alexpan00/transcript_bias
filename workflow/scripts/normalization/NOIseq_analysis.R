@@ -97,14 +97,9 @@ cat("Correlation table saved to:", output_cor_table, "\n")
 
 for (factor in report_factors){
   # length plot 
+  p <- mybias.plot(bias.dat(mydata, factor))
   output_lenplot <- paste0(output_prefix, "_length_", factor, ".png")
-  tryCatch({
-    p <- mybias.plot(bias.dat(mydata, factor))
-    ggsave(filename=output_lenplot, plot=p, height = 4, width = 6.5)
-  }, error = function(e) {
-    message("Warning: could not generate length bias plot for ", factor, ": ", e$message)
-    ggsave(filename=output_lenplot, plot=ggplot2::ggplot() + ggplot2::ggtitle(paste("Length bias -", factor)), height = 4, width = 6.5)
-  })
+  ggsave(filename=output_lenplot, plot=p, height = 4, width = 6.5)
 }
 
 # PCA
@@ -118,14 +113,9 @@ ggsave(filename=output_pcaplot, plot=p, height = 3.5, width = 4.5)
 
 for (factor in report_factors){
   #GC
+  p <- mybias.plot(bias.dat(mydata, factor, bias="GC"))
   output_gcplot <- paste0(output_prefix, "_GC_", factor, ".png")
-  tryCatch({
-    p <- mybias.plot(bias.dat(mydata, factor, bias="GC"))
-    ggsave(filename=output_gcplot, plot=p, height = 4, width = 6.5)
-  }, error = function(e) {
-    message("Warning: could not generate GC bias plot for ", factor, ": ", e$message)
-    ggsave(filename=output_gcplot, plot=ggplot2::ggplot() + ggplot2::ggtitle(paste("GC bias -", factor)), height = 4, width = 6.5)
-  })
+  ggsave(filename=output_gcplot, plot=p, height = 4, width = 6.5)
 }
 
 

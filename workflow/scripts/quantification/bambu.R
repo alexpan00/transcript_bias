@@ -60,8 +60,14 @@ idx2id <- function(idx, ids){
 # format counts the way SQANTI likes
 counts2SQ <- function(counts){
   original_cols <- colnames(counts)
-  counts$superPBID <- rownames(counts)
-  counts <- counts[, c("superPBID", original_cols), drop = FALSE]
+  if (ncol(counts) > 1){
+    counts$superPBID <- rownames(counts)
+    counts <- counts[, c("superPBID", original_cols)]
+  } else {
+    counts$pbid <- rownames(counts)
+    counts <- counts[, c("pbid", original_cols)]
+    colnames(counts) <- c("pbid", "count_fl")
+  }
   return(counts)
 }
 r <- getOption("repos")
