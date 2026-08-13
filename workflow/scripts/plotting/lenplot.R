@@ -363,7 +363,9 @@ hex_bias <- function(mydata, factor, bias = 1, hex = T, bins = 15, alpha = .25){
                mean_expr < quantile(mean_expr, 0.95)) %>% 
         filter(bias > quantile(bias, 0.05) &
                bias < quantile(bias, 0.95))
-
+    if (nrow(df_filtered) == 0) {
+      df_filtered <- df
+    }
     
     
     # Save result to list
