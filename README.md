@@ -77,8 +77,8 @@ All other software (R packages, aligners, quantifiers, etc.) is installed automa
 
 ```bash
 # 1. Clone this repository
-git clone https://github.com/<your-org>/transcripts_workflow.git
-cd transcripts_workflow
+git clone https://github.com/alexpan00/transcript_bias.git
+cd transcript_bias/workflow
 
 # 2. Create the base Snakemake environment (recommended: mamba for speed)
 mamba create -n snakemake -c conda-forge -c bioconda snakemake pandas

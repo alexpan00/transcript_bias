@@ -43,8 +43,8 @@ Open an issue using the **Feature request** template. Describe the tool or analy
 ## Development Setup
 
 ```bash
-git clone https://github.com/<your-org>/transcripts_workflow.git
-cd transcripts_workflow
+git clone https://github.com/alexpan00/transcript_bias.git
+cd transcript_bias/workflow
 mamba create -n snakemake -c conda-forge -c bioconda snakemake pandas
 conda activate snakemake
 ```
