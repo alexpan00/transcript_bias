@@ -74,8 +74,10 @@ sample_2_basenames <- read.table(sample_2_basenames, header = TRUE, sep = "\t")
 if (!all(colnames(counts) %in% sample_2_basenames$sample)){
   if (all(colnames(counts) %in% sample_2_basenames$bam_basename)){
     colnames(counts) <- sample_2_basenames$sample[match(colnames(counts), sample_2_basenames$bam_basename)]
+  } else if ("condition" %in% colnames(sample_2_basenames) && all(colnames(counts) %in% sample_2_basenames$condition)){
+    colnames(counts) <- sample_2_basenames$sample[match(colnames(counts), sample_2_basenames$condition)]
   } else {
-    stop("Column names in counts file do not match sample names or basenames in sample_2_basenames file")
+    stop("Column names in counts file do not match sample names, basenames, or conditions in sample_2_basenames file")
   }
 }
 
