@@ -91,7 +91,7 @@ def check_tools(user_tools, tools):
 def validate_samples_and_factors(metadata_path, factors_path, report_factors=None):
     """
     Validates that metadata and factors files exist, contain required columns,
-    and have matching sample sets, factor columns, and condition concordances.
+    and that all metadata samples are present in the factors file.
     """
     import pandas as pd
     if not os.path.exists(metadata_path):
@@ -107,27 +107,16 @@ def validate_samples_and_factors(metadata_path, factors_path, report_factors=Non
     
     factor_sample_col = "sample" if "sample" in factors_df.columns else ("Sample" if "Sample" in factors_df.columns else factors_df.columns[0])
 
-    meta_samples = set(metadata_df["sample"].dropna())
-    factor_samples = set(factors_df[factor_sample_col].dropna())
+    meta_samples = set(metadata_df["sample"].dropna().astype(str).str.strip())
+    factor_samples = set(factors_df[factor_sample_col].dropna().astype(str).str.strip())
 
     meta_dups = metadata_df["sample"][metadata_df["sample"].duplicated()].tolist()
     if meta_dups:
         raise ValueError(f"Duplicate sample IDs found in metadata file ({metadata_path}): {meta_dups}")
 
-    factor_dups = factors_df[factor_sample_col][factors_df[factor_sample_col].duplicated()].tolist()
-    if factor_dups:
-        raise ValueError(f"Duplicate sample IDs found in factors file ({factors_path}): {factor_dups}")
-
-    in_meta_not_factor = meta_samples - factor_samples
-    in_factor_not_meta = factor_samples - meta_samples
-
-    if in_meta_not_factor or in_factor_not_meta:
-        msg = "Sample mismatch between metadata and factors files:\n"
-        if in_meta_not_factor:
-            msg += f"  - Samples in metadata but missing from factors ({factors_path}): {sorted(list(in_meta_not_factor))}\n"
-        if in_factor_not_meta:
-            msg += f"  - Samples in factors but missing from metadata ({metadata_path}): {sorted(list(in_factor_not_meta))}\n"
-        raise ValueError(msg)
+    missing_in_factors = meta_samples - factor_samples
+    if missing_in_factors:
+        raise ValueError(f"Sample(s) present in metadata ({metadata_path}) but missing from factors ({factors_path}): {sorted(list(missing_in_factors))}")
 
     # Validate report_factors if specified
     if report_factors:
@@ -139,17 +128,6 @@ def validate_samples_and_factors(metadata_path, factors_path, report_factors=Non
                     missing_factors.append(factor)
         if missing_factors:
             raise ValueError(f"The following factor(s) specified in 'report_factors' were not found in factors file ({factors_path}): {missing_factors}\nAvailable columns in factors file: {list(factors_df.columns)}")
-
-    # Check condition concordance if a column with the same name exists in both metadata and factors (e.g. 'condition' vs 'Condition')
-    meta_cols = [c for c in metadata_df.columns if c != "sample"]
-    for mc in meta_cols:
-        matching_fc = next((fc for fc in factors_df.columns if fc.lower() == mc.lower() and fc != factor_sample_col), None)
-        if matching_fc:
-            merged = pd.merge(metadata_df[["sample", mc]], factors_df[[factor_sample_col, matching_fc]], left_on="sample", right_on=factor_sample_col)
-            mismatched = merged[merged[mc].astype(str) != merged[matching_fc].astype(str)]
-            if not mismatched.empty:
-                details = [f"Sample '{row['sample']}': metadata={mc}='{row[mc]}' vs factors={matching_fc}='{row[matching_fc]}'" for _, row in mismatched.iterrows()]
-                raise ValueError(f"Column value mismatch between metadata ({metadata_path}) and factors ({factors_path}):\n  - " + "\n  - ".join(details))
 
 def get_rule_resource(config, rule_name, resource_key, default_val_or_func):
     """
