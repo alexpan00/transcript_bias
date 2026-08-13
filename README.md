@@ -149,7 +149,9 @@ normalization_methods: ["TMM", "CPM", "TPM"]
 
 ### `metadata.csv`
 
-A comma-separated file with **one row per sample**. Required columns:
+A comma-separated file with **one row per sample**.
+
+**Mandatory Columns:**
 
 | Column | Description |
 |---|---|
@@ -158,11 +160,16 @@ A comma-separated file with **one row per sample**. Required columns:
 | `flnc` | Absolute path to the FLNC BAM (can be the same as `aligned` for non-IsoSeq tools) |
 | `sample` | Unique sample identifier |
 | `condition` | Experimental condition label (groups samples for joint reconstruction) |
-| `SIRV` | SIRV mix applied to this sample (`E0`, `E1`, or `E2`); set to `E0` if no SIRVs were used |
+
+**Optional Columns:**
+
+| Column | Description |
+|---|---|
+| `SIRV` | *(Optional)* SIRV mix set applied to this sample (`E0`, `E1`, or `E2`). Required only if evaluating SIRV spike-in controls (`rules/SIRVs.smk`). |
 
 Example:
 
-```
+```csv
 fastq,aligned,flnc,sample,condition,SIRV
 /data/Brain_1.fastq,/data/Brain_1.bam,/data/Brain_1.bam,B31,brain,E0
 /data/Brain_2.fastq,/data/Brain_2.bam,/data/Brain_2.bam,B32,brain,E0

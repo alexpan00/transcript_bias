@@ -38,7 +38,7 @@ rule SIRV_expected_quant:
     benchmark:
         BENCHMARKS + "/SIRVs/expected/{sample}.txt"
     params:
-        sirv_set=lambda wildcards: grouped_by_sample[wildcards.sample].get("SIRV", "E0"),
+        sirv_set=lambda wildcards: grouped_by_sample[wildcards.sample]["SIRV"],
     shell:
         '''
         python {input.script} --reads {input.counts} --set {params.sirv_set} \
