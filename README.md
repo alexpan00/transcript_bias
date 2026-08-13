@@ -319,10 +319,6 @@ results/
 
 ## Citation
 
-If you use this workflow in your research, please cite:
-
-> *[Your paper citation here]*
-
 Please also cite the underlying tools used in your benchmark analysis:
 
 - **kallisto**:
