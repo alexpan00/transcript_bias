@@ -1,11 +1,11 @@
 name: bambu_env
 channels:
-  - bioconda
   - conda-forge
-  - defaults
+  - bioconda
 dependencies:
   - python
+  - r-base
   - bioconductor-bambu=3.12.1
+  - r-xgboost
   - r-biocmanager
   - bioconductor-biocfilecache
-  - r-xgboost
