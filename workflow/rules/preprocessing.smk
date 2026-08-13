@@ -85,10 +85,7 @@ rule prepare_file_to_sample:
             df["fastq_basename"] = df["fastq"].apply(lambda x: basename(x).split('.')[0])
             return df
         metadata_extended = add_basenames(metadata.copy())
-        # select sample, condition, and basenames columns
-        cols = ["sample", "bam_basename", "fastq_basename"]
-        if "condition" in metadata_extended.columns:
-            cols.append("condition")
-        df = metadata_extended[cols]
+        # select sample and basenames columns
+        df = metadata_extended[["sample", "bam_basename", "fastq_basename"]]
         df.to_csv(output.metadata_extended, sep="\t", index=False)
 
