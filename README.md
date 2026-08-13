@@ -41,47 +41,7 @@ A **Snakemake** workflow for transcript reconstruction and quantification from *
 
 ## Workflow Overview
 
-```
-Long-read input (FASTQ / BAM / FLNC)
-        │
-        ▼
-  ┌─────────────────────────────────────────────────────────────┐
-  │                     Preprocessing                           │
-  │  • BAM indexing    • TAMA install    • Transcript-to-gene   │
-  └──────────────────────────┬──────────────────────────────────┘
-                             │
-          ┌──────────────────┼──────────────────────┐
-          ▼                  ▼                       ▼
-   ┌─────────────┐   ┌──────────────┐      ┌───────────────┐
-   │  Alignment  │   │ Quantification│      │ Reconstruction│
-   │  (oarfish)  │   │  (kallisto)   │      │(isoseq/bambu/ │
-   └──────┬──────┘   └──────┬───────┘      │ isoquant/flair)│
-          │                 │              └───────┬────────┘
-          └─────────────────┼────────────────── ──┘
-                            │
-                            ▼
-              ┌─────────────────────────┐
-              │  TAMA merge & SQANTI3   │
-              │  structural annotation  │
-              └────────────┬────────────┘
-                           │
-          ┌────────────────┼─────────────────┐
-          ▼                ▼                  ▼
-  ┌──────────────┐ ┌─────────────┐  ┌────────────────┐
-  │ Normalization│ │  SIRV/ERCC  │  │ Short-read arm │
-  │ (6 methods)  │ │  validation │  │  (optional)    │
-  └──────┬───────┘ └──────┬──────┘  └───────┬────────┘
-         └────────────────┼─────────────────┘
-                          ▼
-              ┌────────────────────────┐
-              │   Downstream Analysis  │
-              │ • Correlation/PCA      │
-              │ • Length/GC bias       │
-              │ • Replicability        │
-              │ • UJC cross-tool       │
-              │ • UpSet plots          │
-              └────────────────────────┘
-```
+![Workflow Overview](.github/github_diagram.drawio.png)
 
 ### Rule modules
 
@@ -298,24 +258,12 @@ results/
 ├── transcripts.tsv                 # Transcriptome stats (length, GC)
 ├── metadata_extended.tsv           # Metadata with file basenames
 │
-├── kallisto/                       # Kallisto (long-read) results
-│   ├── 01_index/
-│   ├── 02_bus/
-│   ├── 03_bus_count/
-│   ├── 04_tcc/
-│   └── NOIseq/
-│       ├── <exp>_counts.tsv
-│       ├── <exp>_NOIseq.rds
-│       └── <normalization>/
-│           ├── <exp>_heatmap.png
-│           ├── <exp>_pca.png
-│           ├── <exp>_length_<factor>.png
-│           └── …
-│
-├── bambu/                          # Bambu results (same sub-structure as kallisto/)
-├── isoquant/                       # IsoQuant results
-├── oarfish/                        # Oarfish results
-├── flair/                          # FLAIR results
+├── kallisto/                       # Kallisto (long-read) quantification & NOIseq results
+├── bambu/                          # Bambu reconstruction, quantification & NOIseq results
+├── isoquant/                       # IsoQuant reconstruction & NOIseq results
+├── oarfish/                        # Oarfish quantification & NOIseq results
+├── flair/                          # FLAIR reconstruction & NOIseq results
+├── kallisto_sr/                    # Kallisto (short-read) quantification & NOIseq results
 │
 ├── SIRVs/                          # SIRV/ERCC spike-in analysis
 │
