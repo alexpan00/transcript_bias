@@ -15,10 +15,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.10
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.12"
 
       - name: Install Snakemake & Dependencies
         run: |
@@ -28,4 +28,24 @@ jobs:
       - name: Validate Snakemake DAG & Syntax (Test Config)
         run: |
           cd workflow
-          snakemake -n --configfile config/config_test.yml
+          cat > /tmp/config_test.yml <<'EOF'
+          experiment: "test_experiment"
+          data_type: "pacbio"
+          output_dir: "results_test"
+          metadata: "test_data/test_metadata.csv"
+          factors: "test_data/test_factors.csv"
+          sr_analysis: false
+          reference_genome: "test_data/tiny_genome.fa"
+          reference_annotation: "test_data/tiny_annotation.gtf"
+          tools: ["bambu"]
+          sqanti_dir: "SQANTI3"
+          normalization_methods: ["TPM"]
+          min_count_condition: 0
+          sirv_analysis: false
+          iso_per_gene_analysis: false
+          replicability_analysis: false
+          coverage_analysis: false
+          report_factors: ["Tissue", "Pool"]
+          EOF
+          touch test_data/sample1.bam test_data/sample2.bam test_data/sample1.fastq test_data/sample2.fastq
+          snakemake -n --configfile /tmp/config_test.yml
