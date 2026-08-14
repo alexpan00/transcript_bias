@@ -161,7 +161,7 @@ def get_rule_resource(config, rule_name, resource_key, default_val_or_func):
         if (resource_key in ("mem_mb", "mem_mib", "memory") or resource_key.startswith("mem")) and isinstance(val, (int, float)):
             multiplier = 1.0 + 0.1 * (attempt - 1)
             val = int(val * multiplier)
-
+        print(f"Resource resolver for rule '{rule_name}', resource '{resource_key}': returning value {val} (attempt {attempt})")
         return val
 
     return _resource_resolver
