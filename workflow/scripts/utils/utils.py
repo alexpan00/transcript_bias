@@ -134,23 +134,34 @@ def get_rule_resource(config, rule_name, resource_key, default_val_or_func):
     Returns a resource-resolver function usable directly inside Snakemake rule directives.
     If config['resources'][rule_name][resource_key] is specified, returns that custom value.
     Otherwise falls back to default_val_or_func (which can be a function or a value).
+    For memory resources (e.g., 'mem_mb', 'mem_mib', 'memory'), increases memory by 10% on each retry attempt.
     """
-    def _resource_resolver(wildcards=None, input=None, attempt=1):
+    def _resource_resolver(wildcards=None, input=None, attempt=1, *args, **kwargs):
         resources_config = config.get("resources", {})
+        val = None
         if isinstance(resources_config, dict):
             rule_res = resources_config.get(rule_name, {})
             if isinstance(rule_res, dict) and resource_key in rule_res:
                 val = rule_res[resource_key]
-                if val is not None:
-                    return val
-        if callable(default_val_or_func):
-            try:
-                return default_val_or_func(wildcards, input, attempt)
-            except TypeError:
+        if val is None:
+            if callable(default_val_or_func):
                 try:
-                    return default_val_or_func(wildcards, input)
+                    val = default_val_or_func(wildcards, input, attempt)
                 except TypeError:
-                    return default_val_or_func()
-        return default_val_or_func
+                    try:
+                        val = default_val_or_func(wildcards, input)
+                    except TypeError:
+                        try:
+                            val = default_val_or_func(wildcards)
+                        except TypeError:
+                            val = default_val_or_func()
+            else:
+                val = default_val_or_func
+
+        if (resource_key in ("mem_mb", "mem_mib", "memory") or resource_key.startswith("mem")) and isinstance(val, (int, float)):
+            multiplier = 1.0 + 0.1 * (attempt - 1)
+            val = int(val * multiplier)
+
+        return val
 
     return _resource_resolver
