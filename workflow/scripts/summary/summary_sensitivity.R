@@ -14,9 +14,15 @@ parse_path_metadata <- function(path_str) {
   parts <- unlist(strsplit(path_str, "/"))
   parts_lower <- tolower(parts)
   found_tool <- NA_character_
-  for (t in tools_list) { if (t %in% parts_lower) { found_tool <- t; break } }
+  for (t in tools_list) {
+    idx <- which(parts_lower == t)
+    if (length(idx) > 0) { found_tool <- parts[idx[1]]; break }
+  }
   found_norm <- NA_character_
-  for (n in norms_list) { if (n %in% parts_lower) { found_norm <- n; break } }
+  for (n in norms_list) {
+    idx <- which(parts_lower == n)
+    if (length(idx) > 0) { found_norm <- parts[idx[1]]; break }
+  }
   if (is.na(found_tool)) found_tool <- if (length(parts) >= 4) parts[length(parts) - 3] else if (length(parts) >= 2) parts[length(parts) - 1] else "unknown"
   if (is.na(found_norm)) found_norm <- if (length(parts) >= 2) parts[length(parts) - 1] else "raw"
   return(list(tool = found_tool, norm = found_norm))
