@@ -14,11 +14,16 @@ def fix_gtf_line(line):
         return ""
     # Match the pattern in the malformed 'gene_id' field
     # Corrects lines like: gene_id "transcript_id SIRV101; SIRV1";
-    match = re.search(r'gene_id "transcript_id\s\S+;\s(\S+)";', line)
+    match = re.search(r'gene_id "(transcript_id\s\S+;\s\S+)";', line)
     
     if match:
-        correct_gene_id = match.group(1)
-        corrected_line = re.sub(r'gene_id "transcript_id\s\S+;\s\S+";', f'gene_id "{correct_gene_id}";', line)
+        # Extract the correct gene_id from the malformed string
+        # Assuming that gene_id is the part after the semicolon
+        parts = match.group(1).split('; ')
+        correct_gene_id = parts[-1]
+        
+        # Replace the malformed gene_id with the correct one
+        corrected_line = line.replace(match.group(1), correct_gene_id)
         return corrected_line
     else:
         return line
@@ -29,11 +34,13 @@ def fix_gtf_file(input_gtf, output_gtf):
             if line.startswith('#'):
                 # Write header/comment lines unchanged
                 outfile.write(line)
+            elif 'unstranded' in line:
+                # skip unstranded genes
+                pass
             else:
                 # Fix the malformed line if necessary
                 fixed_line = fix_gtf_line(line)
-                if fixed_line:
-                    outfile.write(fixed_line)
+                outfile.write(fixed_line)
 
 if __name__ == "__main__":
     # Define input and output GTF file paths
