@@ -20,9 +20,10 @@ rule bambu:
         genome=f"{config['reference_genome']}",
         annotation=f"{config['reference_annotation']}",
         output_dir=os.path.join(config["output_dir"], "bambu","{experiment}","{condition}"),
-        bam_list=lambda wildcards: ",".join(grouped[wildcards.condition]["aligned"])
+        bam_list=lambda wildcards: ",".join(grouped[wildcards.condition]["aligned"]),
+        seed=config.get("seed", 42)
     shell:
-        "Rscript {input.script} {params.genome} {params.annotation} {params.bam_list} {params.output_dir} {threads} > {log} 2>&1"
+        "Rscript {input.script} {params.genome} {params.annotation} {params.bam_list} {params.output_dir} {threads} {params.seed} > {log} 2>&1"
 
 # this rule fixes bambu GTF formatting issues for downstream processing
 rule fix_bambu_gtf:

@@ -37,9 +37,11 @@ rule kallisto_quant_sr:
         LOGS + "/kallisto_sr/{sample}/quant.log"
     benchmark:
         BENCHMARKS + "/kallisto_sr/{sample}/quant.txt"
+    params:
+        seed=config.get("seed", 42)
     shell:
         '''
-        kallisto quant -t {threads} -i {input.index} -o {output.output_dir} \
+        kallisto quant -t {threads} --seed {params.seed} -i {input.index} -o {output.output_dir} \
         --rf-stranded {input.fastq} > {log} 2>&1
         '''
 

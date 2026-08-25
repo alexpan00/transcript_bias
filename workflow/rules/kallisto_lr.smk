@@ -118,9 +118,10 @@ rule kallisto_tcc:
     benchmark:
         BENCHMARKS + "/" + config["experiment"] + "/kallisto" + "/tcc.txt"
     params:
-        lambda wildcards, threads: f'--long -P {"PacBio" if config["data_type"] == "pacbio" else "ONT"}' # TODO should be an input of th pipeline
+        extra=lambda wildcards, threads: f'--long -P {"PacBio" if config["data_type"] == "pacbio" else "ONT"}',
+        seed=config.get("seed", 42)
     shell:       
-        "kallisto quant-tcc -t {threads}  {params} -f {input.flens} -i {input.index} "
+        "kallisto quant-tcc -t {threads} {params.extra} --seed {params.seed} -f {input.flens} -i {input.index} "
         "-e {input.ec} -o {output.output_dir} {input.mtx} > {log} 2>&1"
 
 # This rule converts the kallisto output to a count matrix.

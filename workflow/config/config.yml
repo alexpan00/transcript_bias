@@ -4,6 +4,7 @@
 experiment: "test_run"        # Label for experiment (used in output filenames)
 data_type: "pacbio"           # Long-read platform: "pacbio" or "nanopore"
 output_dir: "results"         # Output directory (relative to the workflow/ directory)
+seed: 42                      # Random seed for reproducibility across tools
 
 # ==============================================================================
 # Input Data
@@ -23,7 +24,7 @@ reference_annotation: "test_data/tiny_annotation.gtf"
 # ==============================================================================
 # Tools & Analysis
 # ==============================================================================
-tools: ["kallisto", "bambu"]
+tools: ["kallisto", "bambu", "flair"]
 
 sqanti_dir: "SQANTI3"
 normalization_methods: ["CPM", "TPM"]

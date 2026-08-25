@@ -79,6 +79,10 @@ annotation = args[[2]]
 reads = args[[3]]
 out_dir = args[[4]]
 n_cores = as.integer(args[[5]])
+seed = if (length(args) >= 6) as.integer(args[[6]]) else 42
+
+# Set random seed for reproducible model training and quantification
+set.seed(seed)
 
 # Options
 print("Running bambu with inputs...")
