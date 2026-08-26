@@ -993,7 +993,7 @@ rule summary_normalization_length:
 rule generate_synthetic_mixtures:
     input:
         raw=os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{experiment}_NOIseq.rds"),
-        mix_def=config.get("mixture_definition", "mixture_definition.csv"),
+        mix_def=config.get("mixture_definition", "test_data/mixture_definition.csv"),
         script=SCRIPTS + "/analysis/generate_synthetic_mixtures.R"
     output:
         syn_raw=os.path.join(config["output_dir"], "{tool}", "NOIseq", "raw", "{experiment}_synthetic_NOIseq.rds")
@@ -1042,7 +1042,7 @@ rule mixture_correlation:
     input:
         obs_norm=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}","{experiment}_NOIseq.rds"),
         syn_norm=rules.normalize_synthetic_mixtures.output.syn_norm,
-        mix_def=config.get("mixture_definition", "mixture_definition.csv"),
+        mix_def=config.get("mixture_definition", "test_data/mixture_definition.csv"),
         script=SCRIPTS + "/analysis/mixture_correlation.R"
     output:
         check=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", ".{experiment}_mixture_correlation"),
