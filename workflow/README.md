@@ -10,10 +10,9 @@ Before running the workflow, you need to configure it by editing the `config/con
 
 *   `metadata`: Path to the metadata file. This file should contain information about your samples, including their conditions.
 *   `output_dir`: The directory where the results will be saved.
-*   `input_dir`: The directory containing the input long-read data (e.g., PacBio FLNC files).
 *   `reference_genome`: Path to the reference genome in FASTA format.
 *   `reference_annotation`: Path to the reference annotation in GTF format.
-*   `experiment`: A name for your experiment.
+*   `experiment`: A name for your experiment. It will be used as a prefix for output files.
 *   `tools`: A list of transcript reconstruction and quantification tools to use. Available tools are: `kallisto`, `isoquant`, `bambu`, `oarfish`, `flair`.
 *   `sr_fastq`: (Optional) Path to a manifest file for short-read FASTQ files. If provided, the workflow will also perform a long-read vs. short-read comparison.
 
