@@ -31,8 +31,8 @@ A **Snakemake** workflow for transcript reconstruction and quantification from *
 - **Multi-tool benchmarking**: Run one or more long-read transcript tools and directly compare their results.
 - **Optional short-read comparison**: Integrate a short-read (kallisto) arm to assess concordance with standard RNA-seq.
 - **Spike-in validation**: Built-in SIRV and ERCC analysis modules for assessing quantification accuracy.
-- **Flexible normalization**: CPM, TPM, TMM, EDA, CQN, and ratio-correction normalization methods.
-- **SQANTI3 QC**: Automatic transcript structural classification for all pipeline outputs.
+- **Flexible normalization**: CPM, TPM, EDA, CQN, and ratio-correction normalization methods.
+- **SQANTI3 QC**: Transcript structural classification for all the transcript reconstruction pipelines.
 - **UJC cross-tool comparison**: Unique Junction Chain analysis to evaluate isoform-level concordance.
 - **Cluster-ready**: Resource allocation functions and SLURM parameters are built in.
 - **Reproducible environments**: Each rule uses a dedicated Conda environment specified under `envs/`.
@@ -129,7 +129,7 @@ reference_annotation: "/path/to/annotation.gtf"
 
 tools: ["kallisto", "bambu"]   # Subset of: kallisto bambu flair isoquant oarfish
 
-normalization_methods: ["TMM", "CPM", "TPM"]
+normalization_methods: ["CPM", "TPM"]
 ```
 
 ### Optional analyses (set to `true` to enable)
@@ -137,7 +137,7 @@ normalization_methods: ["TMM", "CPM", "TPM"]
 | Option | Description |
 |---|---|
 | `sirv_analysis` | Quantify and validate SIRV spike-ins |
-| `sr_analysis` | Run short-read kallisto arm and compare |
+| `sr_analysis` | Run short-read kallisto and compare |
 | `iso_per_gene_analysis` | Isoforms-per-gene statistics |
 | `replicability_analysis` | Cross-replicate reproducibility plots |
 | `coverage_analysis` | Per-sample read coverage plots |
@@ -200,11 +200,12 @@ K31,Kidney,pool1,E1
 
 #### Short-read manifest (`sr_fastq`)
 
-A tab-separated file with two columns: `sample` and `path` (no header).
+A tab-separated file with three columns: `sample`, `file1`, and `file2`.
 
 ```
-B31    /data/sr/Brain_1_R1.fastq.gz,/data/sr/Brain_1_R2.fastq.gz
-B32    /data/sr/Brain_2_R1.fastq.gz,/data/sr/Brain_2_R2.fastq.gz
+sample  file1  file2
+B31    /data/sr/Brain_1_R1.fastq.gz  /data/sr/Brain_1_R2.fastq.gz
+B32    /data/sr/Brain_2_R1.fastq.gz  /data/sr/Brain_2_R2.fastq.gz
 ```
 
 ---
@@ -310,9 +311,8 @@ results/
 ## Reproducibility Notes
 
 - All per-rule software is pinned via Conda environments in `envs/`. Use `--use-conda` to ensure exact software versions are used.
-- SQANTI3 is pinned to a specific git fork (`alexpan00/SQANTI3`). If you need a different version, change the URL in `rules/preprocessing.smk`.
+- SQANTI3 is pinned to a specific git fork (`alexpan00/SQANTI3`). If you need a different version, change the URL in `rules/preprocessing.smk`. Note that some breaking changes have been added from that version.
 - **Absolute paths in `metadata.csv` and `config.yml`** must be updated to match your local file system. A template `config/config.yml` with placeholder paths is provided.
-- Results are fully reproducible given the same input data, config, and Conda environment lock files.
 
 ---
 
