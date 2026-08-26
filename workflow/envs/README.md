@@ -4,7 +4,7 @@ This directory contains the isolated **Conda environment definitions** (`*.yaml`
 
 ---
 
-## 🛠️ Key Software Tools & Version Matrix
+## Key Software Tools & Version Matrix
 
 | Tool / Package | Version | Conda Environment | Purpose |
 |---|---|---|---|
@@ -23,7 +23,7 @@ This directory contains the isolated **Conda environment definitions** (`*.yaml`
 
 ---
 
-## 📦 Automatic Provisioning
+## Snakemake handled installation
 
 When executing Snakemake with the `--use-conda` flag, Snakemake automatically creates and manages these environments inside `.snakemake/conda/`:
 
