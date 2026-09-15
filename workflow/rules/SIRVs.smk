@@ -112,7 +112,7 @@ rule SIRV_counts_NOISeq:
 # This rule prepares the ERCC counts for NOISeq analysis.
 rule ERCC_counts_NOISeq:
     input:
-        counts=config.get("ERCC_counts", ""),
+        counts=config.get("ERCC_counts", []),
         script=SCRIPTS + "/normalization/ERCC_NOIseq.R",
         factors=config["factors"]
     output:

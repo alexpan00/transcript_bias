@@ -322,7 +322,7 @@ rule long_vs_short_tusco:
         long=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}","{experiment}_NOIseq.rds"),
         short=get_short_read_input,
         script=SCRIPTS + "/analysis/compute_subset_correlation.R",
-        tusco_list=config.get("tusco_list", ""),
+        tusco_list=config.get("tusco_list", []),
     output:
         summary_tusco=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", "{experiment}_tusco_summary.rds"),
     conda:
