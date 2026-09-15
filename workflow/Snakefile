@@ -49,6 +49,14 @@ tama_dir = config.get("tama_dir", "tama")
 config["sqanti_dir"] = sqanti_dir = config.get("sqanti_dir", "SQANTI3")
 
 # Load and process metadata
+# If no report factors were requested, fall back to the grouping column of the
+# factors file (column 2; column 1 holds the sample IDs). The downstream R
+# scripts read --factors positionally, so an empty value would shift every
+# argument after it.
+if config.get("factors") and not config.get("report_factors"):
+    factors_columns = list(pd.read_csv(config["factors"], nrows=0).columns)
+    config["report_factors"] = [factors_columns[1] if len(factors_columns) > 1 else factors_columns[0]]
+
 if config.get("factors"):
     validate_samples_and_factors(config["metadata"], config["factors"], config.get("report_factors", []))
 
