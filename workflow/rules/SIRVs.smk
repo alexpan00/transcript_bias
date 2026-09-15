@@ -1,7 +1,8 @@
 # This rule counts the number of reads that map to the SIRV transcripts.
 rule count_SIRV_reads:
     input:
-        bam=lambda wildcards: grouped_by_sample[wildcards.sample]["aligned"]
+        bam=lambda wildcards: grouped_by_sample[wildcards.sample]["aligned"],
+        index=lambda wildcards: [bam + ".bai" for bam in grouped_by_sample[wildcards.sample]["aligned"]]
     output:
         counts=os.path.join(config["output_dir"], "SIRVs", "{sample}", "SIRV_counts.tsv")
     conda:
@@ -16,7 +17,11 @@ rule count_SIRV_reads:
         BENCHMARKS + "/SIRVs/counts/{sample}.txt"
     shell:
         '''
-        samtools idxstats {input.bam} | cut -f 1,3 | grep SIRV | awk -F "\t" '{{sum += $2}} END {{print sum}}' > {output.counts} 2> {log}
+        # awk does the SIRV filtering rather than grep: grep exits 1 when the
+        # reference contains no SIRV contigs at all, which kills the rule because
+        # the shell runs with `set -o pipefail`. `print sum+0` also guarantees a
+        # number is written, since SIRV_expected_quant.py parses it with int().
+        (samtools idxstats {input.bam} | awk -F '\\t' '$1 ~ /SIRV/ {{sum += $3}} END {{print sum+0}}') > {output.counts} 2> {log}
         '''
 
 # This rule calculates the expected SIRV counts based on the total number of reads.
