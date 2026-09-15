@@ -104,7 +104,7 @@ for (long_obj in long_objs){
   datos = data.frame(sapply(conds, 
                 function (k) {
                   rowMeans(as.matrix(mydata_cpm[, main_factor == k]))
-                }))
+                }), check.names = FALSE)
   datos$Length <- fData(mydata)$Length
   # bin the transcript length every 500 and make everything above 10000 to be in the same bin
   datos$Length_bins <- cut(

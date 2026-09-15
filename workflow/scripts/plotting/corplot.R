@@ -18,7 +18,7 @@ cpm <- function(df){
   sums <- colSums(as.matrix(df))
   # Avoid division by zero if all counts are 0
   sums[sums == 0] <- 1
-  df_cpm <- data.frame(t(10^6*t(df)/sums))
+  df_cpm <- data.frame(t(10^6*t(df)/sums), check.names = FALSE)
   return(df_cpm)
 }
 

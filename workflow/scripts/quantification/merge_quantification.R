@@ -51,7 +51,7 @@ for (i in 1:length(quantification_fofn)) {
     warning(paste("Quantification file missing or empty:", file, "- skipping."))
     next
   }
-  quant_file <- read.table(file, header = TRUE, sep = "\t", comment.char = "")
+  quant_file <- read.table(file, header = TRUE, sep = "\t", comment.char = "", check.names = FALSE)
   if (nrow(quant_file) == 0) {
     warning(paste("Quantification file has 0 rows:", file, "- skipping."))
     next

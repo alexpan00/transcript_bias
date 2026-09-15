@@ -60,7 +60,7 @@ output <- args[3]
 factors <- read.table(factors, header = TRUE, sep = ",")
 
 # Read tsv counts file
-counts <- read.table(counts, header = TRUE, row.names = 1, sep = ",")
+counts <- read.table(counts, header = TRUE, row.names = 1, sep = ",", check.names = FALSE)
 
 # counts only have one column, repeat as many times as rows in factors
 if (ncol(counts) == 1){
