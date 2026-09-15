@@ -1,6 +1,17 @@
 library(pheatmap)
 library(RColorBrewer)
 
+# is_log_scale() lives in utils/scale_utils.R. corplot.R is always sourced by a
+# script that has already defined source_script(); fall back to a direct path
+# for the (unsupported) case of sourcing corplot.R on its own.
+if (!exists("is_log_scale")) {
+  if (exists("source_script")) {
+    source_script("scale_utils.R")
+  } else {
+    source(file.path("scripts", "utils", "scale_utils.R"))
+  }
+}
+
 miscolores <- c("#1F77B4", "#FF7F0E", "#2CA02C", "#D62728", "#9467BD", "#8C564B", "#E377C2", "#7F7F7F", "#BCBD22", "#17BECF", "#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00", "#CAB2D6", "#6A3D9A")
 
 cpm <- function(df){
@@ -170,10 +181,22 @@ cor.dat <- function (input_long, input_short, factor = NULL, norm = FALSE, verbo
     rownames(tmp) <- tmp[,1]
     tmp <- tmp[,-1]
     colnames(tmp) <- c("long", "short")
-    # avoid taking log ratio correction (where negative values can be present) and just compute correlation on the original values
-    if (all(tmp >= 0)){
+    # Put both columns on a comparable log-CPM scale. A column that is already
+    # on a log scale (ratio_correction) is left untouched, but the other column
+    # is still transformed -- otherwise the two axes of the regression below
+    # would be on different scales and the reported R2 would be meaningless.
+    long_is_log <- is_log_scale(tmp[, "long", drop = FALSE])
+    short_is_log <- is_log_scale(tmp[, "short", drop = FALSE])
+    if (!long_is_log && !short_is_log) {
       tmp <- remove_zeros(tmp, nivel)
       tmp <- log(cpm(tmp) + 1)
+    } else {
+      if (!long_is_log) {
+        tmp[, "long"] <- log(cpm(tmp[, "long", drop = FALSE]) + 1)[, 1]
+      }
+      if (!short_is_log) {
+        tmp[, "short"] <- log(cpm(tmp[, "short", drop = FALSE]) + 1)[, 1]
+      }
     }
     model <- lm(short ~ long, tmp)
     l_cor[[nivel]] <- tmp
