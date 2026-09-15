@@ -72,11 +72,7 @@ calculate_tpm <- function(counts, lengths) {
 
 ratio_correction <- function(counts,
                              cpm_offset,
-                             return.counts = FALSE,
-                             return.coutns = FALSE) {
-  if (missing(return.counts) && !missing(return.coutns)) {
-    return.counts <- return.coutns
-  }
+                             return.counts = FALSE) {
   # Compute cpm
   cpm_counts <- cpm(counts)
 
@@ -88,15 +84,13 @@ ratio_correction <- function(counts,
   }
 
   # Convert to counts scaling by a constant factor
-  if (return.coutns) {
+  if (return.counts) {
     sample_ratios <- (cpm_counts) / matrix(trans_median + cpm_offset, nrow = nrow(cpm_counts), ncol = ncol(cpm_counts))
     sample_counts <- cpm(sample_ratios)
     return(sample_counts)
   }
 
   # Compute log and apply offset to avoid log(0), then center by transcript median
-  log_cpm_counts <- as.matrix(cpm_counts)
-
   log_cpm_counts <- log2(cpm_counts + cpm_offset) - matrix(log2(trans_median + cpm_offset), nrow = length(trans_median), ncol = ncol(cpm_counts))
 
   return(log_cpm_counts)

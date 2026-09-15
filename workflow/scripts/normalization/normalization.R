@@ -132,7 +132,7 @@ if (norm_method == "TMM"){
   cpm_offset <- 1
   norm_counts <- ratio_correction(exprs(mydata),
                                  cpm_offset,
-                                 return.coutns = TRUE)
+                                 return.counts = TRUE)
 } else {
   stop("Normalization method not recognized. Please use TMM, TPM, EDA, CPM, ratio_correction, ratio_counts, cqn, or read_density.")
 }
