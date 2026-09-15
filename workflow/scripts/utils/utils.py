@@ -129,6 +129,21 @@ def validate_samples_and_factors(metadata_path, factors_path, report_factors=Non
         if missing_factors:
             raise ValueError(f"The following factor(s) specified in 'report_factors' were not found in factors file ({factors_path}): {missing_factors}\nAvailable columns in factors file: {list(factors_df.columns)}")
 
+def log_and_raise(log_path):
+    """Record the exception currently being handled into a rule's log file, then re-raise it.
+
+    Snakemake does not wire the `log:` directive to `run:` directives the way a
+    `shell:` redirect does, so a traceback from a `run:` block would otherwise go
+    only to Snakemake's own stderr and leave `{log}` empty. Call this from an
+    `except` block: it writes the full traceback to `log_path` and re-raises, so
+    the job still fails with the real cause instead of "missing output files".
+    """
+    import traceback
+    with open(log_path, "w") as handle:
+        handle.write(traceback.format_exc())
+    raise
+
+
 def get_rule_resource(config, rule_name, resource_key, default_val_or_func):
     """
     Returns a resource-resolver function usable directly inside Snakemake rule directives.

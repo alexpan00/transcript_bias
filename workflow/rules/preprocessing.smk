@@ -84,10 +84,13 @@ rule prepare_file_to_sample:
             df["bam_basename"] = df["aligned"].apply(lambda x: basename(x).split('.')[0])
             df["fastq_basename"] = df["fastq"].apply(lambda x: basename(x).split('.')[0])
             return df
-        metadata_extended = add_basenames(metadata.copy())
-        # select sample and basenames columns
-        df = metadata_extended[["sample", "bam_basename", "fastq_basename"]]
-        df.to_csv(output.metadata_extended, sep="\t", index=False)
+        try:
+            metadata_extended = add_basenames(metadata.copy())
+            # select sample and basenames columns
+            df = metadata_extended[["sample", "bam_basename", "fastq_basename"]]
+            df.to_csv(output.metadata_extended, sep="\t", index=False)
+        except Exception:
+            log_and_raise(log[0])
 
 
 # This rule copies the workflow configuration, metadata, and factors into a hidden .run_metadata folder in output_dir

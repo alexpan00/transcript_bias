@@ -66,14 +66,17 @@ rule kallisto_counts_sr:
     run:
         import pandas as pd
         import os
-        counts = {}
-        for abundance in input.abundance:
-            sample = os.path.basename(os.path.dirname(abundance))
-            df = pd.read_csv(abundance, sep="\t")
-            counts[sample] = df.set_index("target_id")["est_counts"]
-        count_matrix = pd.DataFrame(counts)
-        count_matrix = count_matrix.fillna(0)
-        count_matrix.to_csv(output.counts, sep="\t", index=True, index_label="transcript_id")
+        try:
+            counts = {}
+            for abundance in input.abundance:
+                sample = os.path.basename(os.path.dirname(abundance))
+                df = pd.read_csv(abundance, sep="\t")
+                counts[sample] = df.set_index("target_id")["est_counts"]
+            count_matrix = pd.DataFrame(counts)
+            count_matrix = count_matrix.fillna(0)
+            count_matrix.to_csv(output.counts, sep="\t", index=True, index_label="transcript_id")
+        except Exception:
+            log_and_raise(log[0])
 
 # This rule prepares the transcriptome stats for kallisto short-read analysis.
 rule kallisto_sr_transcriptome_stats:

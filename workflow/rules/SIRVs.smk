@@ -80,9 +80,8 @@ rule merge_SIRV_counts:
             
             # write the output file
             df.to_csv(output.counts, sep='\t', index=True, index_label='SIRV')
-        except Exception as e:
-            with open(log[0], "w") as f:
-                f.write(f"Error: {e}\n")
+        except Exception:
+            log_and_raise(log[0])
 
 # This rule prepares the SIRV counts for NOISeq analysis.
 rule SIRV_counts_NOISeq:

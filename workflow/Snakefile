@@ -9,7 +9,7 @@ from scripts.utils.utils import (
     sqanti_time, sqanti_queue, format_sjtab, check_tools, 
     group_by_sample, NOISeq_memory, flair_memory, index_memory,
     flair_time, flair_queue, extra_memory, flair_transcriptome_memory, bambu_memory,
-    get_rule_resource, validate_samples_and_factors
+    get_rule_resource, validate_samples_and_factors, log_and_raise
 )
 
 ################################################################################
