@@ -130,6 +130,18 @@ cor.dat <- function (input_long, input_short, factor = NULL, norm = FALSE, verbo
     datos_long <- assayData(input_long)$counts
     datos_short <- assayData(input_short)$counts
   }
+  # Samples are paired positionally below (datos_short[, mifactor == k] uses a
+  # mask built from pData(input_long)), which is only correct because every
+  # object builder sorts its columns the same way. Nothing enforces that across
+  # scripts, so state the invariant here: a silent mismatch would pair the wrong
+  # samples and still produce plausible-looking correlations.
+  if (!identical(colnames(datos_long), colnames(datos_short))) {
+    stop("Sample columns differ between the two objects passed to cor.dat().\n",
+         "  first : ", paste(colnames(datos_long), collapse = ", "), "\n",
+         "  second: ", paste(colnames(datos_short), collapse = ", "), "\n",
+         "They must contain the same samples in the same order.")
+  }
+
   # Remove 0s
   datos_long = remove_zeros(datos_long)
   datos_short = remove_zeros(datos_short)
