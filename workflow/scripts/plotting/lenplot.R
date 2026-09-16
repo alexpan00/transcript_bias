@@ -156,7 +156,7 @@ bias.dat <- function (input, factor = NULL, norm = FALSE, numXbin=200, verbose =
         lengths_cond <- long[rownames(datos_cond)]
         numdatos = length(lengths_cond)      
         numbins = floor(numdatos / numXbin)
-        misbins = quantile(long, probs = seq(0,1,1/numbins), na.rm = TRUE)
+        misbins = quantile(lengths_cond, probs = seq(0,1,1/numbins), na.rm = TRUE)
         
         if (length(misbins) != length(unique(misbins))) {
           repes = names(table(misbins))[which(table(misbins) > 1)]
