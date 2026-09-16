@@ -22,7 +22,7 @@ rule isoquant_db:
 rule isoquant:
     input:
         bam=lambda wildcards: grouped[wildcards.condition]["aligned"],
-        index=lambda wildcards: [bam + ".bai" for bam in grouped[wildcards.condition]["aligned"]],
+        index=lambda wildcards: grouped[wildcards.condition]["bai"],
         db=rules.isoquant_db.output.db
     output:
         isoquant_gtf=os.path.join(config["output_dir"], "isoquant","{experiment}","{condition}","{condition}.transcript_models.gtf"),

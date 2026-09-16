@@ -61,6 +61,9 @@ if config.get("factors"):
     validate_samples_and_factors(config["metadata"], config["factors"], config.get("report_factors", []))
 
 metadata = pd.read_csv(config["metadata"])
+# Index paths are derived once here so that both grouping dicts expose a "bai"
+# key: group_by_condition/group_by_sample turn every metadata column into one.
+metadata["bai"] = metadata["aligned"] + ".bai"
 grouped = group_by_condition(metadata)
 conditions = list(grouped.keys())
 grouped_by_sample = group_by_sample(metadata)

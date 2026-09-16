@@ -2,7 +2,7 @@
 rule count_SIRV_reads:
     input:
         bam=lambda wildcards: grouped_by_sample[wildcards.sample]["aligned"],
-        index=lambda wildcards: [bam + ".bai" for bam in grouped_by_sample[wildcards.sample]["aligned"]]
+        index=lambda wildcards: grouped_by_sample[wildcards.sample]["bai"]
     output:
         counts=os.path.join(config["output_dir"], "SIRVs", "{sample}", "SIRV_counts.tsv")
     conda:
