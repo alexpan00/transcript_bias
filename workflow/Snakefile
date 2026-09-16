@@ -16,7 +16,7 @@ from scripts.utils.utils import (
 # Configuration
 ################################################################################
 
-configfile: "config/config.yml"
+configfile: "config/defaults.yml"
 
 # Load optional per-rule resource overrides
 resources_file = config.get("resources_file", "config/resources.yaml")
