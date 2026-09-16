@@ -39,6 +39,15 @@ ujc_long <- do.call(
       stop(paste("Missing UJC column in", input_files[[idx]]))
     }
 
+    # A tool whose transcripts are all mono-exonic yields a header-only file.
+    # Recycling a scalar against a zero-length column would error, so build the
+    # empty frame explicitly.
+    if (nrow(data) == 0) {
+      return(data.frame(experiment = character(0), tool = character(0),
+                        transcript_id = character(0), UJC = character(0),
+                        stringsAsFactors = FALSE))
+    }
+
     data.frame(
       experiment = experiment_name_from_path(input_files[[idx]]),
       tool = tool,
