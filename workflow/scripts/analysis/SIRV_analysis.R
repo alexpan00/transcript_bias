@@ -191,7 +191,7 @@ output_summary <- paste0(output_prefix, "_sirv_summary.rds")
 saveRDS(summary_df, output_summary)
 
 ## Get count matrix for the SIRVs
-long_exprs <- data.frame(exprs(long_obj))
+long_exprs <- data.frame(exprs(long_obj), check.names = FALSE)
 sirv_exprs <- long_exprs[sirv_info$id,]
 
 rownames(sirv_exprs) <- sirv_info$id
@@ -226,13 +226,15 @@ p <- sirv_exprs %>%
 output_detection <- paste0(output_prefix, "_sirv_detection_10_reads.png")
 ggsave(filename = output_detection, plot = p, height = 5, width = 10)
 
-# CPM normalization (only if ratio correction was not applied, otherwise the values are already normalized)
-sums_exprs <- colSums(sirv_exprs)
-sums_exprs[sums_exprs == 0] <- 1
-if (!all(abs(sums_exprs - 1e6) < 1e-3)) {
-  sirv_exprs <- data.frame(t(10^6 * t(sirv_exprs) / sums_exprs))
+# CPM-rescale within the SIRV subset, unless the values are already on a log
+# scale (ratio_correction), where rescaling by a column sum is meaningless.
+# CPM is idempotent, so no guard is needed for already-CPM input.
+if (is_log_scale(sirv_exprs)) {
+  sirv_exprs <- data.frame(sirv_exprs, check.names = FALSE)
 } else {
-  sirv_exprs <- data.frame(sirv_exprs)
+  sums_exprs <- colSums(sirv_exprs)
+  sums_exprs[sums_exprs == 0] <- 1
+  sirv_exprs <- data.frame(t(10^6 * t(sirv_exprs) / sums_exprs), check.names = FALSE)
 }
 sirv_exprs$id <- rownames(sirv_exprs)
 
@@ -282,12 +284,12 @@ ggsave(filename = output_len, plot = p, height = 5, width = 9)
 
 ## SIRV ground truth as long
 sirv_gt <- exprs(sirv_obj)
-sums_gt <- colSums(sirv_gt)
-sums_gt[sums_gt == 0] <- 1
-if (!all(abs(sums_gt - 1e6) < 1e-3)) {
-  sirv_gt <- data.frame(t(10^6 * t(sirv_gt) / sums_gt))
+if (is_log_scale(sirv_gt)) {
+  sirv_gt <- data.frame(sirv_gt, check.names = FALSE)
 } else {
-  sirv_gt <- data.frame(sirv_gt)
+  sums_gt <- colSums(sirv_gt)
+  sums_gt[sums_gt == 0] <- 1
+  sirv_gt <- data.frame(t(10^6 * t(sirv_gt) / sums_gt), check.names = FALSE)
 }
 sirv_gt$id <- rownames(sirv_gt)
 

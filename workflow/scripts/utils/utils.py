@@ -27,10 +27,21 @@ def NOISeq_memory(wc, input):
     """Calculate memory requirements for a NOISeq job."""
     return 1.25*input.size_mb + 10*1024
 
-def align_memory(wc, input):
-    """Calculate memory requirements for an alignment job."""
-    target_file = input[1] if len(input) > 1 else input[0]
-    return min(max(15.5*getsize(target_file)*BYTE2MB, 5*1024), 1000*1024)
+def align_memory(wc, input, attempt):
+    """Calculate memory requirements for an alignment job.
+
+    Peak RSS is affine in the index size, not proportional to it: the index stays
+    resident while reads stream through in batches, on top of a fixed overhead
+    from the aligner threads and the samtools pipe. Measured across four runs
+    (825-2093 MB indexes, map-hifi and map-ont, 4-182 GB of reads) peak RSS fits
+    1.35 * index_MB + 3414 MB to within 4%, so a purely multiplicative request
+    over-allocates further and further as the reference grows.
+
+    The index is addressed by name: reads are irrelevant to peak memory, and
+    positional indexing would pick a FASTQ for any sample with more than one.
+    """
+    index_mb = getsize(input.transcriptome)*BYTE2MB
+    return min(max(2*index_mb + 6*1024, 5*1024), 1000*1024) * (1 + 0.5*(attempt - 1))
 
 def index_memory(wc, input):
     """Calculate memory requirements for an indexing job."""
@@ -128,6 +139,21 @@ def validate_samples_and_factors(metadata_path, factors_path, report_factors=Non
                     missing_factors.append(factor)
         if missing_factors:
             raise ValueError(f"The following factor(s) specified in 'report_factors' were not found in factors file ({factors_path}): {missing_factors}\nAvailable columns in factors file: {list(factors_df.columns)}")
+
+def log_and_raise(log_path):
+    """Record the exception currently being handled into a rule's log file, then re-raise it.
+
+    Snakemake does not wire the `log:` directive to `run:` directives the way a
+    `shell:` redirect does, so a traceback from a `run:` block would otherwise go
+    only to Snakemake's own stderr and leave `{log}` empty. Call this from an
+    `except` block: it writes the full traceback to `log_path` and re-raises, so
+    the job still fails with the real cause instead of "missing output files".
+    """
+    import traceback
+    with open(log_path, "w") as handle:
+        handle.write(traceback.format_exc())
+    raise
+
 
 def get_rule_resource(config, rule_name, resource_key, default_val_or_func):
     """

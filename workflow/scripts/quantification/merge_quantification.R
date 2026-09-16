@@ -51,7 +51,7 @@ for (i in 1:length(quantification_fofn)) {
     warning(paste("Quantification file missing or empty:", file, "- skipping."))
     next
   }
-  quant_file <- read.table(file, header = TRUE, sep = "\t", comment.char = "")
+  quant_file <- read.table(file, header = TRUE, sep = "\t", comment.char = "", check.names = FALSE)
   if (nrow(quant_file) == 0) {
     warning(paste("Quantification file has 0 rows:", file, "- skipping."))
     next
@@ -64,6 +64,27 @@ for (i in 1:length(quantification_fofn)) {
   tama_name_by_sample <- tama_id_map[tama_id_map$sample_id == sample_id, ]
   match_ids <- match(quant_file$pbid, tama_name_by_sample$old_id)
   quant_file$transcript_id <- tama_name_by_sample$new_id[match_ids]
+
+  # Transcripts that were quantified but are absent from the TAMA merge map get
+  # NA here. Left in place they do not stay separate: group_by() treats every NA
+  # as a single group, and full_join() matches NA to NA across conditions, so
+  # unrelated transcripts from different conditions would be summed into one
+  # phantom row. Drop them instead and report how much expression is lost.
+  # This happens when a step removes transcripts from the GTF but not from the
+  # counts file, e.g. fix_bambu_gtf.py dropping unstranded models.
+  unmatched <- is.na(quant_file$transcript_id)
+  if (any(unmatched)) {
+    count_cols <- setdiff(colnames(quant_file), c("pbid", "transcript_id"))
+    all_counts <- sum(as.matrix(quant_file[, count_cols, drop = FALSE]), na.rm = TRUE)
+    lost_counts <- sum(as.matrix(quant_file[unmatched, count_cols, drop = FALSE]), na.rm = TRUE)
+    warning(sprintf(
+      "%s: %d of %d quantified transcripts are absent from the TAMA merge map (%.3f%% of counts); dropping them. First few: %s",
+      sample_id, sum(unmatched), nrow(quant_file),
+      if (all_counts > 0) 100 * lost_counts / all_counts else 0,
+      paste(head(quant_file$pbid[unmatched], 5), collapse = ", ")))
+    quant_file <- quant_file[!unmatched, , drop = FALSE]
+  }
+
   if ("pbid" %in% colnames(quant_file)) {
     quant_file$pbid <- NULL
   }
@@ -87,7 +108,11 @@ if (length(quant_mat_list) == 0) {
 } else {
   quant_merged_matrix <- quant_mat_list %>%
     reduce(full_join, by = "transcript_id")
-  quant_merged_matrix[is.na(quant_merged_matrix)] <- 0
+  # Only the count columns are zero-filled after the join. A blanket
+  # `df[is.na(df)] <- 0` also rewrites an NA transcript_id to the string "0",
+  # which would disguise the phantom row handled above.
+  quant_merged_matrix <- quant_merged_matrix %>%
+    mutate(across(-transcript_id, ~ replace_na(.x, 0)))
   quant_merged_matrix <- quant_merged_matrix %>% relocate(transcript_id)
 }
 

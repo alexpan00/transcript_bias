@@ -44,18 +44,15 @@ long_obj <- args[1]
 output_prefix <- args[2]
 norm_method <- args[3]
 post_filtering <- if (length(args) >= 4) as.numeric(args[4]) else 0
-params_file <- if (length(args) >= 5) args[5] else NULL
 
 
 
-# Read long reads data and normalize using TMM
+# Read long reads data and apply the requested normalization
 mydata <- readRDS(long_obj)
 # Compute library sizes from raw counts to use in post-filtering
 lib_sizes <- colSums(exprs(mydata))
 
-if (norm_method == "TMM"){
-  norm_counts <- tmm(exprs(mydata))
-} else if (norm_method == "TPM"){
+if (norm_method == "TPM"){
   lengths <- fData(mydata)$Length
   names(lengths) <- rownames(fData(mydata))
   norm_counts <- calculate_tpm(exprs(mydata), lengths)
@@ -83,58 +80,13 @@ if (norm_method == "TMM"){
                 lengthMethod="smooth", subindex=sel_idx)
   # CQn returns log2 normalized values, so we need to transform back
   norm_counts <- 2**(cqn_obj$y + cqn_obj$offset)
-} else if (norm_method == "read_density"){
-  # Check that params_file is provided
-  if (is.null(params_file)) {
-    stop("For read_density normalization, you must provide a params_file as the 4th argument.\n",
-         "The file should be a CSV/TSV with columns: sample, mean, sd")
-  }
-  
-  # Read parameters file
-  if (grepl("\\.csv$", params_file)) {
-    sample_params <- read.csv(params_file, row.names = 1)
-  } else {
-    sample_params <- read.table(params_file, header = TRUE, row.names = 1, sep = "\t")
-  }
-  
-  # Validate parameters file
-  required_cols <- c("mean", "sd")
-  if (!all(required_cols %in% colnames(sample_params))) {
-    stop("params_file must contain columns: mean, sd")
-  }
-  
-  # Validate that all samples in data have parameters
-  missing_samples <- setdiff(colnames(exprs(mydata)), rownames(sample_params))
-  if (length(missing_samples) > 0) {
-    stop("Missing parameters for samples: ", paste(missing_samples, collapse = ", "))
-  }
-  
-  # Apply optimal epsilon correction
-  cat("Applying optimal epsilon correction...\n")
-  result <- optimal_epsilon_correction(
-    mydata,
-    sample_params,
-    simulation_dist = "norm",
-    remove_outliers = FALSE,
-    epsilon_interval = c(0.0001, 1),
-    min_count = 0.0
-  )
-  
-  norm_counts <- result$corrected_counts
-  
-  # Save optimal epsilon values for reference
-  write.csv(data.frame(sample = names(result$optimal_epsilons), 
-                      epsilon = result$optimal_epsilons),
-           paste0(output_prefix, "_optimal_epsilons.csv"),
-           row.names = FALSE)
-  cat("Optimal epsilon values saved to:", paste0(output_prefix, "_optimal_epsilons.csv\n"))
 } else if (norm_method == "ratio_counts") {
   cpm_offset <- 1
   norm_counts <- ratio_correction(exprs(mydata),
                                  cpm_offset,
-                                 return.coutns = TRUE)
+                                 return.counts = TRUE)
 } else {
-  stop("Normalization method not recognized. Please use TMM, TPM, EDA, CPM, ratio_correction, ratio_counts, cqn, or read_density.")
+  stop("Normalization method not recognized. Please use TPM, EDA, CPM, ratio_correction, ratio_counts, or cqn.")
 }
 # Compute ratio of lib sizes before and after normalization for reference
 lib_sizes_after <- colSums(norm_counts)

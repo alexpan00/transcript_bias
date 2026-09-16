@@ -14,8 +14,6 @@ create_noiseq_object <- function(counts, factors, gclength, sq_categories, min_c
   names(mygc) <- rownames(gclength)
   
   # Get SQ categories
-  mycat <- sq_categories$category
-  names(mycat) <- rownames(sq_categories)
   sq_categories$category <- factor(sq_categories$category, xaxislevelsF1, labels=xaxislabelsF1)
   
   # sort the colnames in counts
@@ -63,7 +61,7 @@ sample_2_basenames <- args[8]
 min_count_condition <- as.numeric(args[9])
 
 # Read tsv counts file
-counts <- read.table(counts, header = TRUE, row.names = 1, sep = "\t")
+counts <- read.table(counts, header = TRUE, row.names = 1, sep = "\t", check.names = FALSE)
 
 # Remove rows with all zeros
 counts <- counts[rowSums(counts) > 0,, drop=F]

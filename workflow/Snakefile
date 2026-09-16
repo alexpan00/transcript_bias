@@ -9,14 +9,14 @@ from scripts.utils.utils import (
     sqanti_time, sqanti_queue, format_sjtab, check_tools, 
     group_by_sample, NOISeq_memory, flair_memory, index_memory,
     flair_time, flair_queue, extra_memory, flair_transcriptome_memory, bambu_memory,
-    get_rule_resource, validate_samples_and_factors
+    get_rule_resource, validate_samples_and_factors, log_and_raise
 )
 
 ################################################################################
 # Configuration
 ################################################################################
 
-configfile: "config/config.yml"
+configfile: "config/defaults.yml"
 
 # Load optional per-rule resource overrides
 resources_file = config.get("resources_file", "config/resources.yaml")
@@ -49,10 +49,21 @@ tama_dir = config.get("tama_dir", "tama")
 config["sqanti_dir"] = sqanti_dir = config.get("sqanti_dir", "SQANTI3")
 
 # Load and process metadata
+# If no report factors were requested, fall back to the grouping column of the
+# factors file (column 2; column 1 holds the sample IDs). The downstream R
+# scripts read --factors positionally, so an empty value would shift every
+# argument after it.
+if config.get("factors") and not config.get("report_factors"):
+    factors_columns = list(pd.read_csv(config["factors"], nrows=0).columns)
+    config["report_factors"] = [factors_columns[1] if len(factors_columns) > 1 else factors_columns[0]]
+
 if config.get("factors"):
     validate_samples_and_factors(config["metadata"], config["factors"], config.get("report_factors", []))
 
 metadata = pd.read_csv(config["metadata"])
+# Index paths are derived once here so that both grouping dicts expose a "bai"
+# key: group_by_condition/group_by_sample turn every metadata column into one.
+metadata["bai"] = metadata["aligned"] + ".bai"
 grouped = group_by_condition(metadata)
 conditions = list(grouped.keys())
 grouped_by_sample = group_by_sample(metadata)

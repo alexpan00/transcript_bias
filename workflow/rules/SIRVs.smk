@@ -1,7 +1,8 @@
 # This rule counts the number of reads that map to the SIRV transcripts.
 rule count_SIRV_reads:
     input:
-        bam=lambda wildcards: grouped_by_sample[wildcards.sample]["aligned"]
+        bam=lambda wildcards: grouped_by_sample[wildcards.sample]["aligned"],
+        index=lambda wildcards: grouped_by_sample[wildcards.sample]["bai"]
     output:
         counts=os.path.join(config["output_dir"], "SIRVs", "{sample}", "SIRV_counts.tsv")
     conda:
@@ -16,7 +17,11 @@ rule count_SIRV_reads:
         BENCHMARKS + "/SIRVs/counts/{sample}.txt"
     shell:
         '''
-        samtools idxstats {input.bam} | cut -f 1,3 | grep SIRV | awk -F "\t" '{{sum += $2}} END {{print sum}}' > {output.counts} 2> {log}
+        # awk does the SIRV filtering rather than grep: grep exits 1 when the
+        # reference contains no SIRV contigs at all, which kills the rule because
+        # the shell runs with `set -o pipefail`. `print sum+0` also guarantees a
+        # number is written, since SIRV_expected_quant.py parses it with int().
+        (samtools idxstats {input.bam} | awk -F '\\t' '$1 ~ /SIRV/ {{sum += $3}} END {{print sum+0}}') > {output.counts} 2> {log}
         '''
 
 # This rule calculates the expected SIRV counts based on the total number of reads.
@@ -80,9 +85,8 @@ rule merge_SIRV_counts:
             
             # write the output file
             df.to_csv(output.counts, sep='\t', index=True, index_label='SIRV')
-        except Exception as e:
-            with open(log[0], "w") as f:
-                f.write(f"Error: {e}\n")
+        except Exception:
+            log_and_raise(log[0])
 
 # This rule prepares the SIRV counts for NOISeq analysis.
 rule SIRV_counts_NOISeq:
@@ -113,7 +117,7 @@ rule SIRV_counts_NOISeq:
 # This rule prepares the ERCC counts for NOISeq analysis.
 rule ERCC_counts_NOISeq:
     input:
-        counts=config.get("ERCC_counts", ""),
+        counts=config.get("ERCC_counts", []),
         script=SCRIPTS + "/normalization/ERCC_NOIseq.R",
         factors=config["factors"]
     output:

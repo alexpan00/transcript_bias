@@ -19,7 +19,7 @@ output_summary_table <- args[3]
 
 parse_path_metadata <- function(path_str) {
   tools_list <- c("bambu", "flair", "isoseq", "isoquant", "kallisto", "oarfish", "tama", "sqanti")
-  norms_list <- c("raw", "cpm", "tmm", "tpm", "ratio_correction", "ratio_counts", "cqn", "eda", "read_density", "optimal_epsilon")
+  norms_list <- c("raw", "cpm", "tpm", "ratio_correction", "ratio_counts", "cqn", "eda")
   parts <- unlist(strsplit(path_str, "/"))
   parts_lower <- tolower(parts)
   found_tool <- NA_character_

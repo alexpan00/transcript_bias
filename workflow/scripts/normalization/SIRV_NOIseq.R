@@ -31,7 +31,7 @@ sirv_info <- args[3]
 output <- args[4]
 
 # Read tsv counts file
-counts <- read.table(counts, header = TRUE, row.names = 1, sep = "\t")
+counts <- read.table(counts, header = TRUE, row.names = 1, sep = "\t", check.names = FALSE)
 
 # Remove rows with all zeros
 counts <- counts[rowSums(counts) > 0, , drop = FALSE]

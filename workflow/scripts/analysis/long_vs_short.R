@@ -50,19 +50,6 @@ output_prefix <- args[3]
 long_obj <- readRDS(long_obj)
 short_obj <- readRDS(short_obj)
 
-assign_length_quantile <- function(lengths, breaks) {
-  if (length(breaks) == 0L) {
-    return(rep(NA_character_, length(lengths)))
-  }
-
-  if (length(breaks) == 1L) {
-    return(ifelse(is.na(lengths), NA_character_, "Q1"))
-  }
-
-  labels <- paste0("Q", seq_len(length(breaks) - 1L))
-  as.character(cut(lengths, breaks = breaks, include.lowest = TRUE, labels = labels))
-}
-
 assign_length_group <- function(lengths) {
   # Define static breaks and labels
   # Breaks: 0 to 1500, 1501 to 3000, 3001 to 4500, and > 4500

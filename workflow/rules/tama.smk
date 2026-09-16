@@ -117,17 +117,20 @@ rule tama_filter_bed:
         BENCHMARKS + "/{experiment}/tama/{pipeline}/tama_filter_bed.txt"
     run:
         import pandas as pd
-        df = pd.read_csv(input.counts, sep="\t", header=0, index_col=0)
-        trasncripts_id = set(df.index)
-        with open(input.bed, "r") as f:
-            with open(output.filtered_bed, "w") as out:
-                for line in f:
-                    if line.startswith("#"):
-                        out.write(line)
-                    else:
-                        transcript_id = line.split("\t")[3].split(";")[1] # tama transcript ids are formated like gene_id;transcript_id 
-                        if transcript_id in trasncripts_id:
+        try:
+            df = pd.read_csv(input.counts, sep="\t", header=0, index_col=0)
+            trasncripts_id = set(df.index)
+            with open(input.bed, "r") as f:
+                with open(output.filtered_bed, "w") as out:
+                    for line in f:
+                        if line.startswith("#"):
                             out.write(line)
+                        else:
+                            transcript_id = line.split("\t")[3].split(";")[1] # tama transcript ids are formated like gene_id;transcript_id 
+                            if transcript_id in trasncripts_id:
+                                out.write(line)
+        except Exception:
+            log_and_raise(log[0])
 
 # This rule converts the filtered BED file to GTF format.
 rule tama_merge_gtf:

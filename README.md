@@ -102,10 +102,10 @@ nano config/config.yml
 nano metadata.csv
 
 # 3. Dry-run to check the workflow
-snakemake -n --use-conda
+snakemake -n --use-conda --configfile config/config.yml
 
 # 4. Run locally with 8 cores
-snakemake --cores 8 --use-conda
+snakemake --cores 8 --use-conda --configfile config/config.yml
 ```
 
 ---
@@ -221,8 +221,12 @@ cd workflow
 ### Local machine
 
 ```bash
-snakemake --cores <N> --use-conda
+snakemake --cores <N> --use-conda --configfile config/my_config.yml
 ```
+
+> `config/defaults.yml` is loaded automatically and supplies safe defaults
+> (seed, normalization methods, optional-analysis toggles). Dataset-specific
+> keys have no default on purpose, so `--configfile` is required.
 
 ### SLURM cluster
 
@@ -231,6 +235,7 @@ snakemake \
   --executor slurm \
   --jobs 200 \
   --use-conda \
+  --configfile config/my_config.yml \
   --default-resources slurm_account=<account> slurm_partition=<partition> \
   --latency-wait 60
 ```
@@ -240,7 +245,8 @@ snakemake \
 > snakemake \
 >   --cluster "sbatch --qos={resources.slurm_extra} --cpus-per-task={threads} --mem={resources.mem_mb}" \
 >   --jobs 200 \
->   --use-conda
+>   --use-conda \
+>   --configfile config/my_config.yml
 > ```
 
 ### Useful flags

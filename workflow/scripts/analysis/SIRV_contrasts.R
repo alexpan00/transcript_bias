@@ -140,7 +140,7 @@ sirv_info$E2 <- sapply(sirv_info$E2, function(x){eval(parse(text=x))})
 # sirv_info$E0_E0 <- sirv_info$E0/sirv_info$E0
 
 
-# Read long reads data and normalize using TMM
+# Read long reads data and convert the SIRV subset to CPM
 mydata <- readRDS(long_obj)
 mydata_cpm <- exprs(mydata)
 
@@ -175,7 +175,7 @@ for (i in 1:ncol(sirv_contrasts)){
     sirv_info[sirv_contrast] <- sirv_info[, sirv_cond1]/sirv_info[,sirv_cond2]
   }
     p1 <- tryCatch({
-      res_tmm <- evaluate_sampling_rmsd(mydata_cpm,
+      res_sampling <- evaluate_sampling_rmsd(mydata_cpm,
                              pData(mydata),
                              main_factor,
                              cond1,
@@ -184,7 +184,7 @@ for (i in 1:ncol(sirv_contrasts)){
                              sirv_info,
                              n_replicates = 1,
                              n_reads = min_reads)
-      plot_sampling_rmsd(res_tmm, fc_col = sirv_contrast)
+      plot_sampling_rmsd(res_sampling, fc_col = sirv_contrast)
     }, error = function(e){
       message(paste("Error in contrast", cond_contrast, ":", e$message))
       ggplot() + ggtitle(paste("Error in contrast", cond_contrast))

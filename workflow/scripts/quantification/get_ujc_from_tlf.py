@@ -30,9 +30,6 @@ def parse_exons(exons_field: str) -> List[Tuple[int, int]]:
 
 
 def build_ujc(chromosome: str, strand: str, exon_ranges: List[Tuple[int, int]]) -> str:
-    if len(exon_ranges) < 2:
-        return f"{chromosome}_{strand}_mono-exon"
-
     boundary_parts: List[str] = []
     for exon_index, (exon_start, exon_end) in enumerate(exon_ranges):
         if exon_index > 0:
@@ -59,6 +56,8 @@ def main() -> int:
     ) as output_handle:
         writer = csv.writer(output_handle, delimiter="\t")
         writer.writerow(["transcript_id", "UJC"])
+        written = 0
+        mono_exonic = 0
 
         for line_number, raw_line in enumerate(input_handle, start=1):
             line = raw_line.strip()
@@ -85,9 +84,22 @@ def main() -> int:
                 continue
 
             exon_ranges = parse_exons(exons_field)
-            ujc = build_ujc(chromosome, strand, exon_ranges)
+            # A UJC is a chain of splice junctions, so a mono-exonic transcript
+            # has none to report. They used to share a single
+            # "<chrom>_<strand>_mono-exon" identifier, which collapsed every
+            # mono-exonic transcript on a chromosome and strand into one UJC.
+            if len(exon_ranges) < 2:
+                mono_exonic += 1
+                continue
 
+            ujc = build_ujc(chromosome, strand, exon_ranges)
             writer.writerow([transcript_id, ujc])
+            written += 1
+
+    print(
+        f"{written} spliced transcripts written, "
+        f"{mono_exonic} mono-exonic transcripts skipped (no splice junctions)"
+    )
 
     return 0
 

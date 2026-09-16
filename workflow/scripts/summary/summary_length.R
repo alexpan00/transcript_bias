@@ -2,6 +2,45 @@ library(tidyverse)
 library(NOISeq)
 library(mgcv)
 
+get_script_dir <- function() {
+  if (exists("snakemake") && !is.null(snakemake@script)) {
+    return(dirname(snakemake@script))
+  }
+  cmd_args <- commandArgs(trailingOnly = FALSE)
+  file_arg <- grep("^--file=", cmd_args, value = TRUE)
+  if (length(file_arg) > 0) {
+    return(dirname(sub("^--file=", "", file_arg[1])))
+  }
+  possible_dirs <- c("workflow/scripts", "scripts", ".")
+  for (d in possible_dirs) {
+    if (dir.exists(d)) return(d)
+  }
+  return(".")
+}
+
+source_script <- function(script_name) {
+  categories <- c(".", "plotting", "analysis", "normalization", "preprocessing", "quantification", "summary", "utils")
+  s_dir <- get_script_dir()
+  for (cat in categories) {
+    cands <- c(
+      file.path(s_dir, cat, script_name),
+      file.path(s_dir, script_name),
+      file.path("workflow/scripts", cat, script_name),
+      file.path("scripts", cat, script_name),
+      file.path(cat, script_name)
+    )
+    for (cand in cands) {
+      if (file.exists(cand)) {
+        source(cand)
+        return(invisible(TRUE))
+      }
+    }
+  }
+  source(script_name)
+}
+
+source_script("scale_utils.R")
+
 cpm <- function(df){
   df <- as.matrix(df)
   df_cpm <- t(10^6*t(df)/colSums(df))
@@ -19,7 +58,7 @@ output_csv <- args[4]
 
 parse_path_metadata <- function(path_str) {
   tools_list <- c("bambu", "flair", "isoseq", "isoquant", "kallisto", "oarfish", "tama", "sqanti")
-  norms_list <- c("raw", "cpm", "tmm", "tpm", "ratio_correction", "ratio_counts", "cqn", "eda", "read_density", "optimal_epsilon")
+  norms_list <- c("raw", "cpm", "tpm", "ratio_correction", "ratio_counts", "cqn", "eda")
   parts <- unlist(strsplit(path_str, "/"))
   parts_lower <- tolower(parts)
   found_tool <- NA_character_
@@ -50,8 +89,10 @@ for (long_obj in long_objs){
   mydata <- readRDS(long_obj)
   mydata_cpm <- exprs(mydata)
 
-  # Compute CPM for the counts. If normalization method is ratio_correction skip
-  if (normalization_method != "ratio_correction") {
+  # Put every method on a common CPM scale, so that what is compared between
+  # methods is the part of the normalization that is not sequencing depth.
+  # Values already on a log scale (ratio_correction) are left untouched.
+  if (!is_log_scale(mydata_cpm)) {
     mydata_cpm <- cpm(mydata_cpm)
   }
   # select the main factor
@@ -63,7 +104,7 @@ for (long_obj in long_objs){
   datos = data.frame(sapply(conds, 
                 function (k) {
                   rowMeans(as.matrix(mydata_cpm[, main_factor == k]))
-                }))
+                }), check.names = FALSE)
   datos$Length <- fData(mydata)$Length
   # bin the transcript length every 500 and make everything above 10000 to be in the same bin
   datos$Length_bins <- cut(

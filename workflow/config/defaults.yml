@@ -1,0 +1,21 @@
+# ==============================================================================
+# Workflow defaults - loaded by the Snakefile for every run
+# ==============================================================================
+# Only keys with a safe universal default belong here. Anything that identifies
+# the dataset (experiment, metadata, factors, output_dir, data_type,
+# reference_genome, reference_annotation) is deliberately absent, so omitting
+# one fails with a KeyError instead of silently falling back to the bundled
+# test data. Override any of these from the config passed via --configfile.
+
+seed: 42
+sqanti_dir: "SQANTI3"
+
+normalization_methods: ["CPM", "TPM"]
+min_count_condition: 0
+
+# Optional analyses, all off unless enabled
+sr_analysis: false
+sirv_analysis: false
+iso_per_gene_analysis: false
+replicability_analysis: false
+coverage_analysis: false

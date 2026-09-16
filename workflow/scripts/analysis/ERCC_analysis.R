@@ -154,7 +154,7 @@ output_summary <- paste0(output_prefix, "_ercc_summary.rds")
 saveRDS(summary_df, output_summary)
 
 ## Get count matrix for the all the ERCCs
-long_exprs <- data.frame(exprs(long_obj))
+long_exprs <- data.frame(exprs(long_obj), check.names = FALSE)
 common_erccs <- intersect(rownames(ercc_obj), rownames(long_exprs))
 if (length(common_erccs) > 0) {
   ercc_exprs <- long_exprs[common_erccs, , drop = FALSE]

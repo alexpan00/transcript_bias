@@ -1,21 +1,37 @@
-# This rule indexes the BAM files.
-rule index_bam:
-    input:
-        bam="{bam_path}/{sample}.bam"
-    output:
-        index="{bam_path}/{sample}.bam.bai"
-    conda:
-        ENVS + "/align.yaml"
-    threads: 1
-    resources:
-        mem_mb=generic_memory,
-        slurm_extra="'--qos=short'"
-    log:
-        LOGS + "/index_bam/{bam_path}/{sample}_index.log"
-    benchmark:
-        BENCHMARKS + "/index_bam/{bam_path}/{sample}_index.txt"
-    shell:
-        "samtools index {input.bam} {output} > {log} 2>&1"
+# Index the BAM files listed in the metadata, one rule per distinct BAM.
+#
+# A {sample} wildcard cannot be used here: the index must sit next to the BAM,
+# so the output is an arbitrary path from the metadata, and Snakemake matches
+# targets by pattern-matching output strings ("only input files can be
+# specified as functions"). A path-spanning wildcard would work but Snakemake
+# requires the log to carry the same wildcards as the output, which would drag
+# the whole absolute BAM path into the log filename. Generating the rules from
+# the metadata avoids both problems and keeps BAM filenames free to differ from
+# the sample IDs, which the global `sample` wildcard constraint would otherwise
+# forbid.
+_bam_to_sample = {}
+for _row in metadata.itertuples():
+    _bam_to_sample.setdefault(_row.aligned, _row.sample)
+
+for _bam, _sample in _bam_to_sample.items():
+    rule:
+        name: f"index_bam_{_sample}"
+        input:
+            bam=_bam
+        output:
+            index=_bam + ".bai"
+        conda:
+            ENVS + "/align.yaml"
+        threads: 1
+        resources:
+            mem_mb=generic_memory,
+            slurm_extra="'--qos=short'"
+        log:
+            LOGS + f"/index_bam/{_sample}_index.log"
+        benchmark:
+            BENCHMARKS + f"/index_bam/{_sample}_index.txt"
+        shell:
+            "samtools index {input.bam} {output.index} > {log} 2>&1"
 
 # This rule prepares the SQANTI3 environment by cloning the git repository.
 rule prepare_sqanti:
@@ -84,10 +100,13 @@ rule prepare_file_to_sample:
             df["bam_basename"] = df["aligned"].apply(lambda x: basename(x).split('.')[0])
             df["fastq_basename"] = df["fastq"].apply(lambda x: basename(x).split('.')[0])
             return df
-        metadata_extended = add_basenames(metadata.copy())
-        # select sample and basenames columns
-        df = metadata_extended[["sample", "bam_basename", "fastq_basename"]]
-        df.to_csv(output.metadata_extended, sep="\t", index=False)
+        try:
+            metadata_extended = add_basenames(metadata.copy())
+            # select sample and basenames columns
+            df = metadata_extended[["sample", "bam_basename", "fastq_basename"]]
+            df.to_csv(output.metadata_extended, sep="\t", index=False)
+        except Exception:
+            log_and_raise(log[0])
 
 
 # This rule copies the workflow configuration, metadata, and factors into a hidden .run_metadata folder in output_dir
