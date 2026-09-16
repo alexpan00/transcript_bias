@@ -27,10 +27,21 @@ def NOISeq_memory(wc, input):
     """Calculate memory requirements for a NOISeq job."""
     return 1.25*input.size_mb + 10*1024
 
-def align_memory(wc, input):
-    """Calculate memory requirements for an alignment job."""
-    target_file = input[1] if len(input) > 1 else input[0]
-    return min(max(15.5*getsize(target_file)*BYTE2MB, 5*1024), 1000*1024)
+def align_memory(wc, input, attempt):
+    """Calculate memory requirements for an alignment job.
+
+    Peak RSS is affine in the index size, not proportional to it: the index stays
+    resident while reads stream through in batches, on top of a fixed overhead
+    from the aligner threads and the samtools pipe. Measured across four runs
+    (825-2093 MB indexes, map-hifi and map-ont, 4-182 GB of reads) peak RSS fits
+    1.35 * index_MB + 3414 MB to within 4%, so a purely multiplicative request
+    over-allocates further and further as the reference grows.
+
+    The index is addressed by name: reads are irrelevant to peak memory, and
+    positional indexing would pick a FASTQ for any sample with more than one.
+    """
+    index_mb = getsize(input.transcriptome)*BYTE2MB
+    return min(max(2*index_mb + 6*1024, 5*1024), 1000*1024) * (1 + 0.5*(attempt - 1))
 
 def index_memory(wc, input):
     """Calculate memory requirements for an indexing job."""

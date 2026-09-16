@@ -69,7 +69,7 @@ rule align_transcriptome:
         ENVS + "/align.yaml"
     threads: 8
     resources:
-        mem_mb=align_memory,
+        mem_mb=get_rule_resource(config, "align_transcriptome", "mem_mb", align_memory),
         slurm_extra="'--qos=short'"
     log:
         LOGS + "/" + config["experiment"] + "/oarfish" + "/{sample}_align_transcriptome.log"
