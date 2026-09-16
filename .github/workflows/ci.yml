@@ -7,9 +7,63 @@ on:
     branches: [ master, main, code-audit-and-improvements ]
 
 jobs:
-  validate-workflow:
-    name: Snakemake DAG & Syntax Validation
+  lint:
+    name: Script syntax
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Python syntax
+        run: python -m compileall -q workflow/scripts
+
+      # A dry run never sources an R file, so a syntax error in any of these
+      # would otherwise only surface mid-run on the cluster.
+      - name: R syntax
+        run: |
+          cd workflow
+          status=0
+          for f in $(find scripts -name '*.R' | sort); do
+            Rscript -e "invisible(parse('$f'))" \
+              || { echo "::error file=workflow/$f::R parse error"; status=1; }
+          done
+          exit $status
+
+  dag:
+    name: DAG (${{ matrix.name }})
+    runs-on: ubuntu-latest
+
+    # The workflow's own config is reused and adjusted per entry with --config,
+    # rather than duplicating a config in this file where it would drift. Each
+    # entry exercises a code path the others do not: the optional analyses are
+    # off by default, so a single baseline dry run leaves most of the DAG
+    # untested.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: baseline
+            extra: ""
+          - name: sirv-replicability-isoforms-coverage
+            extra: "sirv_analysis=True replicability_analysis=True iso_per_gene_analysis=True coverage_analysis=True"
+          - name: short-reads-mixtures
+            extra: "sr_analysis=True sr_fastq=test_data/sr_manifest.tsv mixture_definition=test_data/mixture_definition.csv"
+          - name: no-report-factors
+            extra: "report_factors='[]'"
+          # sirv_analysis is required here: it is what pulls the .bai files into
+          # the DAG, and therefore what exercises index_bam. Without it the
+          # alternately named BAMs are never indexed and the entry proves
+          # nothing.
+          - name: bam-names-differ-from-sample-ids
+            extra: "metadata=test_data/test_metadata_altnames.csv sirv_analysis=True"
 
     steps:
       - name: Checkout repository
@@ -20,32 +74,29 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install Snakemake & Dependencies
+      - name: Install Snakemake & dependencies
         run: |
           python -m pip install --upgrade pip
           pip install snakemake pandas pyyaml
 
-      - name: Validate Snakemake DAG & Syntax (Test Config)
+      # BAM filenames are allowed to differ from the sample IDs in the
+      # metadata. Copies are made here rather than committed so the repository
+      # does not carry duplicate binaries.
+      - name: Stage alternately named BAMs
+        if: matrix.name == 'bam-names-differ-from-sample-ids'
         run: |
           cd workflow
-          cat > /tmp/config_test.yml <<'EOF'
-          experiment: "test_experiment"
-          data_type: "pacbio"
-          output_dir: "results_test"
-          metadata: "test_data/test_metadata.csv"
-          factors: "test_data/test_factors.csv"
-          sr_analysis: false
-          reference_genome: "test_data/tiny_genome.fa"
-          reference_annotation: "test_data/tiny_annotation.gtf"
-          tools: ["bambu"]
-          sqanti_dir: "SQANTI3"
-          normalization_methods: ["TPM"]
-          min_count_condition: 0
-          sirv_analysis: false
-          iso_per_gene_analysis: false
-          replicability_analysis: false
-          coverage_analysis: false
-          report_factors: ["Tissue", "Pool"]
-          EOF
-          touch test_data/sample1.bam test_data/sample2.bam test_data/sample1.fastq test_data/sample2.fastq
-          snakemake -n --configfile /tmp/config_test.yml
+          cp test_data/sample1.bam test_data/seqrun_A.bam
+          cp test_data/sample2.bam test_data/seqrun_B.bam
+
+      - name: Validate DAG
+        shell: bash   # -eo pipefail, so the pipe into tee cannot mask a failure
+        run: |
+          cd workflow
+          snakemake -n --configfile config/config.yml \
+            --config output_dir="$RUNNER_TEMP/results" ${{ matrix.extra }} 2>&1 | tee dag.log
+
+      - name: Assert no empty file paths
+        run: |
+          cd workflow
+          ! grep -q "Empty file path encountered" dag.log
