@@ -867,7 +867,6 @@ rule normalization:
     input:
         noiseq_obj=rules.NOIseq_object.output.noiseq_obj,
         script=SCRIPTS + "/normalization/normalization.R",
-        length_normalization_params=lambda wildcards: [config["length_normalization_params"]] if wildcards.norm_method == "read_density" else [],
     output:
         norm_counts = os.path.join(config["output_dir"], "{tool}", "NOIseq", "{norm_method}", "{experiment}_NOIseq.rds"),
     conda:
@@ -887,7 +886,7 @@ rule normalization:
         '''
         Rscript {input.script} {input.noiseq_obj} \
             {params.output_prefix} {wildcards.norm_method} \
-            {params.post_filtering} {input.length_normalization_params} > {log} 2>&1
+            {params.post_filtering} > {log} 2>&1
         '''
 
 # sr gene level expression normalization
@@ -1016,7 +1015,6 @@ rule normalize_synthetic_mixtures:
     input:
         syn_raw=rules.generate_synthetic_mixtures.output.syn_raw,
         script=SCRIPTS + "/normalization/normalization.R",
-        length_normalization_params=lambda wildcards: [config["length_normalization_params"]] if wildcards.normalization_method == "read_density" else [],
     output:
         syn_norm=os.path.join(config["output_dir"], "{tool}", "NOIseq", "{normalization_method}", "{experiment}_synthetic_NOIseq.rds")
     conda:
@@ -1034,8 +1032,7 @@ rule normalize_synthetic_mixtures:
     shell:
         '''
         Rscript {input.script} {input.syn_raw} {params.output_prefix} \
-            {wildcards.normalization_method} {params.post_filtering} \
-            {input.length_normalization_params} > {log} 2>&1
+            {wildcards.normalization_method} {params.post_filtering} > {log} 2>&1
         '''
 
 rule mixture_correlation:

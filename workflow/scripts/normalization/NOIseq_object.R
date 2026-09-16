@@ -14,8 +14,6 @@ create_noiseq_object <- function(counts, factors, gclength, sq_categories, min_c
   names(mygc) <- rownames(gclength)
   
   # Get SQ categories
-  mycat <- sq_categories$category
-  names(mycat) <- rownames(sq_categories)
   sq_categories$category <- factor(sq_categories$category, xaxislevelsF1, labels=xaxislabelsF1)
   
   # sort the colnames in counts
