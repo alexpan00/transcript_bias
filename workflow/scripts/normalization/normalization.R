@@ -68,13 +68,22 @@ if (norm_method == "TPM"){
                                  cpm_offset)
 } else if (norm_method == "cqn"){
   library(cqn)
-  CQN_n_trans <- 3500 # Number of transcripts to use for CQN normalization
 
   lengths <- fData(mydata)$Length
   names(lengths) <- rownames(fData(mydata))
   gc_content <- fData(mydata)$GC
   names(gc_content) <- rownames(fData(mydata))
-  sel_idx <- select_top_n(exprs(mydata), n = CQN_n_trans)
+  # cqn's own default subindex is which(rowMeans(counts) > 50). Long-read
+  # counts often fall below that, and an empty or near-empty subindex makes
+  # cqn fail with "'from' must be a finite number" or a singular design
+  # matrix, so fall back to the most expressed transcripts instead.
+  sel_idx <- which(rowMeans(exprs(mydata)) > 50)
+  if (length(sel_idx) < 100) {
+    sel_idx <- select_top_n(exprs(mydata), n = 3500)
+    message(sprintf(
+      "cqn: only %d transcripts have a mean count above 50; fitting on the %d most expressed instead.",
+      sum(rowMeans(exprs(mydata)) > 50), length(sel_idx)))
+  }
   cqn_obj <- cqn(exprs(mydata), lengths=lengths,
                 x=gc_content, verbose=TRUE, 
                 lengthMethod="smooth", subindex=sel_idx)

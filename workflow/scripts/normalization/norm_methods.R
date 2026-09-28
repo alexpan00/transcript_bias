@@ -115,5 +115,5 @@ gcLoess <- function(counts,gc, degree= 2, span=0.75) {
 # select top n percent expressed genes
 select_top_n <- function(data, n = 3500){
   mean_exp <- rowMeans(data)
-  order(mean_exp, decreasing = TRUE)[seq_len(n)]
+  order(mean_exp, decreasing = TRUE)[seq_len(min(n, length(mean_exp)))]
 }
