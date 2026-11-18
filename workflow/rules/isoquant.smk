@@ -42,9 +42,25 @@ rule isoquant:
         annotation= lambda w,input: f"--genedb {input.db}",
         data_type=f"--data_type {config['data_type']}",
         output_dir="--output " + os.path.join(config["output_dir"], "isoquant", "{experiment}"),
-        prefix="--prefix {condition}"
+        prefix="--prefix {condition}",
+        # Name the count columns with the metadata sample IDs rather than the BAM
+        # basenames, so they match the factors file however the BAMs are named.
+        labels=lambda w: "--labels " + " ".join(grouped[w.condition]["sample"]),
+        # Set only when the condition has a single BAM; see the rename below.
+        single_sample=lambda w: grouped[w.condition]["sample"][0] if len(grouped[w.condition]["sample"]) == 1 else ""
     shell:
-        "isoquant.py -t {threads} --bam {input.bam} {params} > {log} 2>&1"
+        """
+        isoquant.py -t {threads} --bam {input.bam} {params.genome} {params.annotation} {params.data_type} {params.output_dir} {params.prefix} {params.labels} > {log} 2>&1
+
+        # With a single BAM, IsoQuant writes <condition>.transcript_model_counts.tsv
+        # with a "#feature_id<TAB>count" header instead of the grouped file. Rename it
+        # and put the sample ID in the header, as in the multi-BAM case.
+        if [ -n "{params.single_sample}" ]; then
+            single_counts=$(dirname {output.isoquant_counts})/{wildcards.condition}.transcript_model_counts.tsv
+            awk -v s="{params.single_sample}" 'BEGIN {{OFS="\\t"}} NR == 1 && /^#feature_id/ {{print "#feature_id", s; next}} {{print}}' "$single_counts" > {output.isoquant_counts}
+            rm "$single_counts"
+        fi
+        """
 
 # This rule converts the IsoQuant GTF output to BED format.
 rule isoquant_bed:
